@@ -1,0 +1,1246 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ============================================================
+     FontAwesome (icons) – already loaded in base, but safe to include
+     ============================================================ -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+  /* ================================================================
+     GLOBAL PAYMENT PAGE STYLES
+     ================================================================ */
+  .payment-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  }
+
+  .payment-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  /* ----- Payment method cards ----- */
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 1rem;
+    margin: 1.2rem 0;
+  }
+  .method-card {
+    background: #fff;
+    border: 2px solid #f3f4f6;
+    border-radius: 16px;
+    padding: 0.8rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .method-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+    border-color: #fbd38d;
+  }
+  .method-card.active {
+    border-color: #f97316;
+    background: #fff7ed;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+  }
+  .method-card i {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .method-card .fab.fa-cc-visa { color: #1a1f71; }
+  .method-card .fab.fa-cc-mastercard { color: #eb001b; }
+  .method-card .fab.fa-cc-paypal { color: #003087; }
+  .method-card .fab.fa-cc-amex { color: #006fcf; }
+  .method-card .fab.fa-cc-discover { color: #ff6000; }
+  .method-card .fab.fa-cc-apple-pay { color: #000; }
+  .method-card .fab.fa-google-pay { color: #4285f4; }
+  .method-card .fab.fa-stripe { color: #635bff; }
+  .method-card .fab.fa-cc-diners-club { color: #004e9e; }
+  .method-card .fab.fa-cc-diners-club { color: #004e9e; }
+  .method-card span {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-top: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  /* ----- Form fields ----- */
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    margin-bottom: 0.25rem;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: border 0.2s, box-shadow 0.2s;
+    background: #fff;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+  }
+  .form-group .error-msg {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+    display: none;
+  }
+  .form-group.error input {
+    border-color: #ef4444;
+  }
+  .form-group.error .error-msg {
+    display: block;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .cvv-hint {
+    position: relative;
+  }
+  .cvv-hint .tooltip {
+    display: inline-block;
+    margin-left: 6px;
+    color: #6b7280;
+    cursor: help;
+    font-size: 0.9rem;
+  }
+  .cvv-hint .tooltip:hover::after {
+    content: "3-4 digit code on card back";
+    position: absolute;
+    background: #1f2937;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    top: -28px;
+    left: 0;
+    white-space: nowrap;
+  }
+
+  .dynamic-fields {
+    min-height: 60px;
+    transition: all 0.3s;
+  }
+
+  /* ----- Security badges ----- */
+  .security-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem 1.5rem;
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .security-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+    font-weight: 500;
+  }
+  .security-badge i {
+    color: #10b981;
+    font-size: 1.1rem;
+  }
+
+  /* ----- Summary card (sticky) ----- */
+  .summary-card {
+    background: #1f2937;
+    color: #f9fafb;
+    border-radius: 24px;
+    padding: 1.8rem 1.5rem;
+    position: sticky;
+    top: 2rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  }
+  .summary-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+    color: #f97316;
+    letter-spacing: -0.3px;
+  }
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.9rem;
+  }
+  .summary-item .label { color: #9ca3af; }
+  .summary-item .value { font-weight: 500; }
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0 0.5rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border-top: 2px solid #f97316;
+    margin-top: 0.5rem;
+  }
+  .summary-total .value { color: #f97316; }
+
+  /* ----- Promo / Rewards section ----- */
+  .promo-section {
+    margin: 1.2rem 0;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 1rem;
+  }
+  .promo-toggle {
+    background: none;
+    border: none;
+    color: #f97316;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+  }
+  .promo-toggle i { transition: transform 0.3s; }
+  .promo-toggle.open i { transform: rotate(180deg); }
+  .promo-body {
+    display: none;
+    margin-top: 1rem;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  .promo-body.open { display: flex; }
+  .promo-body input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.6rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+  }
+  .promo-body .btn-apply {
+    background: #f97316;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ----- Pay button ----- */
+  .btn-pay {
+    background: #f97316;
+    color: #fff;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+  }
+  .btn-pay:hover {
+    background: #ea580c;
+    transform: translateY(-2px);
+  }
+  .btn-pay:active { transform: scale(0.97); }
+  .btn-pay:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ----- Progress tracker (new) ----- */
+  .progress-tracker {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.5rem 0 2rem;
+    position: relative;
+  }
+  .progress-tracker::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: #e5e7eb;
+    z-index: 0;
+  }
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    flex: 1;
+  }
+  .progress-step .circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.4s;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .progress-step.active .circle {
+    background: #f97316;
+    color: #fff;
+    border-color: #f97316;
+    box-shadow: 0 0 0 4px rgba(249,115,22,0.2);
+  }
+  .progress-step.completed .circle {
+    background: #10b981;
+    color: #fff;
+    border-color: #10b981;
+  }
+  .progress-step .label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-top: 0.4rem;
+    text-align: center;
+  }
+  .progress-step.active .label {
+    color: #f97316;
+    font-weight: 600;
+  }
+  .progress-step.completed .label {
+    color: #10b981;
+  }
+
+  /* ----- PIN modal (not full-screen) ----- */
+  .pin-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .pin-modal-overlay.show {
+    display: flex;
+  }
+  .pin-modal-box {
+    background: #fff;
+    border-radius: 28px;
+    padding: 2.2rem 2.5rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+    animation: popIn 0.3s ease;
+  }
+  .pin-modal-box .lock-icon {
+    font-size: 2.8rem;
+    color: #f97316;
+    background: rgba(249,115,22,0.1);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  .pin-modal-box h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .pin-modal-box p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  .pin-modal-box input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 1.2rem;
+    text-align: center;
+    letter-spacing: 4px;
+    font-weight: 600;
+  }
+  .pin-modal-box input:focus {
+    outline: none;
+    border-color: #f97316;
+  }
+  .pin-modal-box .pin-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+  }
+  .pin-modal-box .pin-actions button {
+    flex: 1;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pin-modal-box .pin-actions .btn-pin-confirm {
+    background: #f97316;
+    color: #fff;
+  }
+  .pin-modal-box .pin-actions .btn-pin-confirm:hover {
+    background: #ea580c;
+  }
+  .pin-modal-box .pin-actions .btn-pin-skip {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  .pin-modal-box .pin-actions .btn-pin-skip:hover {
+    background: #e5e7eb;
+  }
+  .pin-modal-box .pin-error {
+    color: #ef4444;
+    font-size: 0.85rem;
+    min-height: 1.6rem;
+    margin-top: 0.3rem;
+  }
+
+  /* ===== SUCCESS OVERLAY (full screen but still a modal) ===== */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.4s;
+  }
+  .success-overlay.show {
+    display: flex;
+  }
+  .success-modal {
+    background: #fff;
+    border-radius: 32px;
+    padding: 2.5rem;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .success-modal .checkmark {
+    font-size: 4rem;
+    color: #10b981;
+    background: #d1fae5;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    animation: pop 0.5s ease;
+  }
+  .success-modal h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  .success-modal .receipt {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 1rem;
+    text-align: left;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .success-modal .receipt div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed #e5e7eb;
+  }
+  .success-modal .receipt div:last-child {
+    border-bottom: none;
+  }
+  .success-modal .btn-close-modal {
+    background: #f97316;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .success-modal .btn-close-modal:hover {
+    background: #ea580c;
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #f97316;
+    opacity: 0;
+    animation: confettiFall 3s ease-in forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes pop {
+    0% { transform: scale(0); }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ----- Responsive ----- */
+  @media (max-width: 992px) {
+    .payment-grid { grid-template-columns: 1fr; }
+    .summary-card { position: static; }
+  }
+  @media (max-width: 480px) {
+    .payment-wrapper { padding: 1rem 0.8rem; }
+    .method-grid { grid-template-columns: repeat(3, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    .pin-modal-box { padding: 1.8rem 1.2rem; }
+    .progress-tracker { flex-wrap: wrap; gap: 0.5rem; }
+    .progress-step { flex: 0 0 45%; }
+  }
+
+  /* ===== EXTRA SECTIONS (NEW) ===== */
+  .loyalty-section, .referral-section {
+    margin-top: 1.2rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 16px;
+  }
+  .loyalty-section .balance {
+    font-weight: 700;
+    color: #f97316;
+    font-size: 1.1rem;
+  }
+  .payment-history-preview {
+    margin-top: 1.5rem;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 1rem;
+  }
+  .payment-history-preview table {
+    width: 100%;
+    font-size: 0.85rem;
+    border-collapse: collapse;
+  }
+  .payment-history-preview td, .payment-history-preview th {
+    padding: 0.4rem 0.2rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .payment-history-preview th {
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+  }
+  .status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .status-badge.completed { background: #d1fae5; color: #065f46; }
+  .status-badge.pending { background: #fef3c7; color: #92400e; }
+  .status-badge.failed { background: #fee2e2; color: #991b1b; }
+</style>
+
+<!-- ================================================================
+     PAGE CONTENT
+     ================================================================ -->
+<div class="payment-wrapper">
+
+  <!-- ===== PAGE HEADER ===== -->
+  <div class="page-header">
+    <h1 style="font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 0.8rem;">
+      <i class="fas fa-credit-card" style="color: #f97316;"></i> Secure Payment
+    </h1>
+    <p style="color: #6b7280;">Complete your booking with confidence – all transactions are encrypted.</p>
+  </div>
+
+  <!-- ===== PROGRESS TRACKER (NEW) ===== -->
+  <div class="progress-tracker">
+    <div class="progress-step active">
+      <div class="circle"><i class="fas fa-shopping-cart" style="font-size:0.9rem;"></i></div>
+      <span class="label">Order</span>
+    </div>
+    <div class="progress-step">
+      <div class="circle"><i class="fas fa-credit-card"></i></div>
+      <span class="label">Payment</span>
+    </div>
+    <div class="progress-step">
+      <div class="circle"><i class="fas fa-check-circle"></i></div>
+      <span class="label">Confirmation</span>
+    </div>
+    <div class="progress-step">
+      <div class="circle"><i class="fas fa-truck"></i></div>
+      <span class="label">Service</span>
+    </div>
+  </div>
+
+  <!-- ===== PAYMENT GRID ===== -->
+  <div class="payment-grid">
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- ---- PAYMENT METHOD CARDS ---- -->
+      <div class="glass-card" style="padding: 1.5rem;">
+        <h3 style="font-weight: 600; margin-bottom: 0.8rem; font-size: 1.1rem;">Choose Payment Method</h3>
+        <div class="method-grid" id="methodGrid">
+          <div class="method-card active" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fab fa-cc-visa"></i><span>Visa</span>
+          </div>
+          <div class="method-card" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fab fa-cc-mastercard"></i><span>Mastercard</span>
+          </div>
+          <div class="method-card" data-method="paypal" onclick="selectMethod(this, 'paypal')">
+            <i class="fab fa-cc-paypal"></i><span>PayPal</span>
+          </div>
+          <div class="method-card" data-method="wallet" onclick="selectMethod(this, 'wallet')">
+            <i class="fab fa-cc-apple-pay"></i><span>Apple Pay</span>
+          </div>
+          <div class="method-card" data-method="wallet" onclick="selectMethod(this, 'wallet')">
+            <i class="fab fa-google-pay"></i><span>Google Pay</span>
+          </div>
+          <div class="method-card" data-method="paytm" onclick="selectMethod(this, 'paytm')">
+            <i class="fas fa-mobile-alt" style="color:#00baf2;"></i><span>Paytm</span>
+          </div>
+          <div class="method-card" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fab fa-stripe"></i><span>Stripe</span>
+          </div>
+          <div class="method-card" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fab fa-cc-amex"></i><span>Amex</span>
+          </div>
+          <div class="method-card" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fab fa-cc-discover"></i><span>Discover</span>
+          </div>
+          <div class="method-card" data-method="card" onclick="selectMethod(this, 'card')">
+            <i class="fas fa-credit-card" style="color:#004b87;"></i><span>UnionPay</span>
+          </div>
+          <div class="method-card" data-method="upi" onclick="selectMethod(this, 'upi')">
+            <i class="fas fa-qrcode" style="color:#007bff;"></i><span>UPI</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- PAYMENT FORM ---- -->
+      <div class="glass-card" style="padding: 1.5rem; margin-top: 1.5rem;">
+        <h3 style="font-weight: 600; margin-bottom: 1rem; font-size: 1.1rem;">Payment Details</h3>
+        <form id="paymentForm" onsubmit="return false;">
+          <!-- Dynamic fields container -->
+          <div id="dynamicFields" class="dynamic-fields">
+            <!-- Default: card fields -->
+            <div id="cardFields">
+              <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" />
+                <div class="error-msg">Please enter a valid card number.</div>
+              </div>
+              <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" id="cardName" placeholder="John Doe" />
+                <div class="error-msg">Cardholder name is required.</div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Expiry Date</label>
+                  <input type="text" id="expiry" placeholder="MM / YY" maxlength="7" />
+                  <div class="error-msg">Enter a valid expiry date.</div>
+                </div>
+                <div class="form-group cvv-hint">
+                  <label>CVV <span class="tooltip"><i class="fas fa-question-circle"></i></span></label>
+                  <input type="password" id="cvv" placeholder="•••" maxlength="4" />
+                  <div class="error-msg">CVV is required (3-4 digits).</div>
+                </div>
+              </div>
+            </div>
+            <!-- PayPal fields -->
+            <div id="paypalFields" style="display:none;">
+              <div class="form-group">
+                <label>PayPal Email</label>
+                <input type="email" id="paypalEmail" placeholder="you@example.com" />
+                <div class="error-msg">Please enter a valid email.</div>
+              </div>
+            </div>
+            <!-- UPI fields -->
+            <div id="upiFields" style="display:none;">
+              <div class="form-group">
+                <label>UPI ID</label>
+                <input type="text" id="upiId" placeholder="example@upi" />
+                <div class="error-msg">Enter a valid UPI ID.</div>
+              </div>
+            </div>
+            <!-- Paytm fields -->
+            <div id="paytmFields" style="display:none;">
+              <div class="form-group">
+                <label>Paytm Mobile Number</label>
+                <input type="text" id="paytmPhone" placeholder="9876543210" maxlength="10" />
+                <div class="error-msg">Enter a valid 10-digit mobile number.</div>
+              </div>
+            </div>
+            <!-- Wallet (Apple/Google Pay) – no extra fields -->
+            <div id="walletFields" style="display:none;">
+              <p style="color: #6b7280; font-size:0.95rem;">You will be redirected to your device's wallet to complete the payment.</p>
+            </div>
+          </div>
+
+          <!-- Billing address (optional) -->
+          <div class="form-group">
+            <label>Billing Address (optional)</label>
+            <input type="text" id="billingAddress" placeholder="Street, City, ZIP" />
+          </div>
+          <div class="form-group" style="display: flex; align-items: center; gap: 0.6rem;">
+            <input type="checkbox" id="saveCard" />
+            <label for="saveCard" style="margin: 0; font-weight: 400; font-size: 0.9rem;">Securely save this payment method for future bookings</label>
+          </div>
+
+          <!-- Promo / Rewards -->
+          <div class="promo-section">
+            <button class="promo-toggle" id="promoToggle" onclick="togglePromo()">
+              <i class="fas fa-tag"></i> Apply Promo Code / Rewards <i class="fas fa-chevron-down" id="promoChevron"></i>
+            </button>
+            <div class="promo-body" id="promoBody">
+              <input type="text" placeholder="Enter promo code" id="promoInput" />
+              <button class="btn-apply" onclick="applyPromo()">Apply</button>
+              <span style="font-size:0.85rem; color:#6b7280; display:flex; align-items:center; gap:0.3rem;">
+                <i class="fas fa-coins"></i> Reward points: 450
+              </span>
+              <span style="font-size:0.85rem; color:#6b7280; display:flex; align-items:center; gap:0.3rem;">
+                <i class="fas fa-gift"></i> Gift voucher: <strong>$10</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- PAY NOW BUTTON -->
+          <button type="submit" class="btn-pay" id="payNowBtn">
+            <i class="fas fa-lock"></i> Pay Now – $138.24
+          </button>
+        </form>
+
+        <!-- Security Badges -->
+        <div class="security-badges">
+          <span class="security-badge"><i class="fas fa-shield-alt"></i> SSL Encrypted</span>
+          <span class="security-badge"><i class="fas fa-check-circle"></i> PCI DSS Compliant</span>
+          <span class="security-badge"><i class="fas fa-user-secret"></i> Fraud Protection</span>
+          <span class="security-badge" style="color:#f97316; font-weight:700;">100% Secure Payment</span>
+        </div>
+
+        <!-- ===== NEW: LOYALTY & REFERRAL ===== -->
+        <div class="loyalty-section">
+          <h4 style="font-weight:600; margin:0 0 0.3rem;"><i class="fas fa-star" style="color:#fbbf24;"></i> Loyalty Rewards</h4>
+          <p style="font-size:0.9rem; margin:0;">You have <span class="balance">450 points</span> – redeem for discounts!</p>
+          <p style="font-size:0.85rem; color:#6b7280; margin:0.2rem 0 0;">Earn 2x points on this booking – <strong>+90 points</strong> after payment.</p>
+        </div>
+
+        <div class="referral-section">
+          <h4 style="font-weight:600; margin:0 0 0.3rem;"><i class="fas fa-users" style="color:#f97316;"></i> Referral Code</h4>
+          <div style="display:flex; gap:0.5rem;">
+            <input type="text" placeholder="Enter referral code" style="flex:1; padding:0.5rem; border:2px solid #e5e7eb; border-radius:12px;" />
+            <button class="btn-apply" onclick="alert('Referral applied! You both get $5.')">Apply</button>
+          </div>
+          <p style="font-size:0.8rem; color:#6b7280; margin-top:0.3rem;">Share your code with friends and earn $5 each.</p>
+        </div>
+      </div>
+
+      <!-- ===== NEW: PAYMENT HISTORY PREVIEW ===== -->
+      <div class="payment-history-preview">
+        <h4 style="font-weight:600; margin:0 0 0.5rem;"><i class="fas fa-history" style="color:#f97316;"></i> Recent Transactions</h4>
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Service</th><th>Amount</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Jul 08</td><td>Electrical</td><td>$45.00</td><td><span class="status-badge completed">Paid</span></td></tr>
+            <tr><td>Jul 05</td><td>Plumbing</td><td>$120.00</td><td><span class="status-badge pending">Pending</span></td></tr>
+            <tr><td>Jun 28</td><td>Carpentry</td><td>$80.00</td><td><span class="status-badge completed">Paid</span></td></tr>
+          </tbody>
+        </table>
+        <a href="#" style="font-size:0.85rem; color:#f97316; display:block; margin-top:0.5rem;">View all →</a>
+      </div>
+
+    </div> <!-- /left column -->
+
+    <!-- RIGHT COLUMN: SUMMARY -->
+    <div>
+      <div class="summary-card">
+        <h3><i class="fas fa-receipt" style="margin-right: 0.5rem;"></i> Payment Summary</h3>
+
+        <!-- Multiple services now -->
+        <div class="summary-item"><span class="label">Service 1</span><span class="value">Plumbing Repair</span></div>
+        <div class="summary-item"><span class="label">Service 2</span><span class="value">Electrical Check</span></div>
+        <div class="summary-item"><span class="label">Worker</span><span class="value">John Fixit</span></div>
+        <div class="summary-item"><span class="label">Booking ID</span><span class="value">#BK-2026-0710</span></div>
+        <div class="summary-item"><span class="label">Advance Amount</span><span class="value">$120.00</span></div>
+        <div class="summary-item"><span class="label">Platform Fee</span><span class="value">$8.00</span></div>
+        <div class="summary-item"><span class="label">Taxes (8%)</span><span class="value">$10.24</span></div>
+        <div class="summary-item" style="border-bottom: none;"><span class="label">Estimated Service</span><span class="value">Jul 12, 2:00 PM</span></div>
+        <div class="summary-total"><span>Total Payable</span><span class="value">$138.24</span></div>
+
+        <!-- Extra: estimated delivery / service time -->
+        <div style="margin-top:1rem; font-size:0.8rem; color:#9ca3af; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.8rem;">
+          <i class="fas fa-clock"></i> Service starts in <strong style="color:#f97316;">2 days</strong>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /payment-grid -->
+</div> <!-- /payment-wrapper -->
+
+<!-- ================================================================
+     PIN MODAL (not full-screen)
+     ================================================================ -->
+<div class="pin-modal-overlay" id="pinModal">
+  <div class="pin-modal-box">
+    <div class="lock-icon"><i class="fas fa-lock"></i></div>
+    <h3>Secure PIN</h3>
+    <p>Enter your payment PIN to continue (any 4+ digits for demo).</p>
+    <input type="password" id="pinInput" maxlength="6" placeholder="• • • •" autocomplete="off" />
+    <div class="pin-error" id="pinError"></div>
+    <div class="pin-actions">
+      <button class="btn-pin-confirm" id="pinConfirmBtn"><i class="fas fa-check"></i> Confirm</button>
+      <button class="btn-pin-skip" id="pinSkipBtn"><i class="fas fa-forward"></i> Skip (demo)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     SUCCESS MODAL
+     ================================================================ -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-modal">
+    <div class="checkmark"><i class="fas fa-check"></i></div>
+    <h2>Payment Successful!</h2>
+    <p style="color: #6b7280; margin-bottom: 1rem;">Your transaction has been completed.</p>
+    <div class="receipt" id="receiptContent">
+      <div><span>Transaction ID</span><span id="txnId">#TX-2026-0710-001</span></div>
+      <div><span>Date</span><span id="txnDate">Jul 10, 2026 14:32</span></div>
+      <div><span>Amount</span><span id="txnAmount">$138.24</span></div>
+      <div><span>Method</span><span id="txnMethod">Visa</span></div>
+      <div><span>Status</span><span style="color:#10b981;">Completed</span></div>
+    </div>
+    <button class="btn-close-modal" id="closeSuccessBtn"><i class="fas fa-download"></i> Download Receipt</button>
+    <button class="btn-close-modal" style="background: #6b7280; margin-top:0.5rem;" id="closeModalBtn">Close</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     CONFETTI CONTAINER
+     ================================================================ -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+  // =================================================================
+  // 1. PAYMENT METHOD SELECTION
+  // =================================================================
+  let currentMethod = 'card';
+
+  function selectMethod(el, method) {
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    currentMethod = method;
+
+    // Hide all dynamic field groups
+    document.getElementById('cardFields').style.display = 'none';
+    document.getElementById('paypalFields').style.display = 'none';
+    document.getElementById('upiFields').style.display = 'none';
+    document.getElementById('paytmFields').style.display = 'none';
+    document.getElementById('walletFields').style.display = 'none';
+
+    if (method === 'card') document.getElementById('cardFields').style.display = 'block';
+    else if (method === 'paypal') document.getElementById('paypalFields').style.display = 'block';
+    else if (method === 'upi') document.getElementById('upiFields').style.display = 'block';
+    else if (method === 'paytm') document.getElementById('paytmFields').style.display = 'block';
+    else if (method === 'wallet') document.getElementById('walletFields').style.display = 'block';
+
+    document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+  }
+
+  // =================================================================
+  // 2. CARD INPUT FORMATTING
+  // =================================================================
+  document.getElementById('cardNumber').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, '');
+    if (val.length > 16) val = val.slice(0, 16);
+    let formatted = '';
+    for (let i = 0; i < val.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += ' ';
+      formatted += val[i];
+    }
+    this.value = formatted;
+    this.closest('.form-group').classList.remove('error');
+  });
+
+  document.getElementById('expiry').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, '');
+    if (val.length > 4) val = val.slice(0, 4);
+    if (val.length >= 2) {
+      let month = val.slice(0, 2);
+      let year = val.slice(2);
+      if (parseInt(month) > 12) month = '12';
+      this.value = month + (year ? ' / ' + year : '');
+    } else {
+      this.value = val;
+    }
+    this.closest('.form-group').classList.remove('error');
+  });
+
+  document.getElementById('cvv').addEventListener('input', function() {
+    if (this.value.length > 4) this.value = this.value.slice(0, 4);
+    this.closest('.form-group').classList.remove('error');
+  });
+
+  // =================================================================
+  // 3. PROMO TOGGLE
+  // =================================================================
+  function togglePromo() {
+    const body = document.getElementById('promoBody');
+    const chevron = document.getElementById('promoChevron');
+    body.classList.toggle('open');
+    document.getElementById('promoToggle').classList.toggle('open');
+  }
+
+  function applyPromo() {
+    const input = document.getElementById('promoInput');
+    if (!input.value.trim()) {
+      showToast('Error', 'Please enter a promo code.', true);
+      return;
+    }
+    showToast('Success', 'Promo code applied! You saved $15.', false);
+    input.value = '';
+  }
+
+  // =================================================================
+  // 4. FORM VALIDATION
+  // =================================================================
+  function validateForm() {
+    let valid = true;
+    document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+
+    if (currentMethod === 'card') {
+      const card = document.getElementById('cardNumber').value.replace(/\s/g, '');
+      const name = document.getElementById('cardName').value.trim();
+      const exp = document.getElementById('expiry').value.trim();
+      const cv = document.getElementById('cvv').value.trim();
+      if (card.length < 16) {
+        document.getElementById('cardNumber').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+      if (!name) {
+        document.getElementById('cardName').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+      if (exp.length < 5) {
+        document.getElementById('expiry').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+      if (cv.length < 3) {
+        document.getElementById('cvv').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    } else if (currentMethod === 'paypal') {
+      const email = document.getElementById('paypalEmail').value.trim();
+      if (!email || !email.includes('@')) {
+        document.getElementById('paypalEmail').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    } else if (currentMethod === 'upi') {
+      const upi = document.getElementById('upiId').value.trim();
+      if (!upi || !upi.includes('@')) {
+        document.getElementById('upiId').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    } else if (currentMethod === 'paytm') {
+      const phone = document.getElementById('paytmPhone').value.trim();
+      if (!phone || phone.length !== 10 || !/^\d+$/.test(phone)) {
+        document.getElementById('paytmPhone').closest('.form-group').classList.add('error');
+        valid = false;
+      }
+    }
+    // wallet: no validation needed
+
+    if (!valid) {
+      const firstError = document.querySelector('.form-group.error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return valid;
+  }
+
+  // =================================================================
+  // 5. PIN MODAL (not full-screen)
+  // =================================================================
+  function showPinModal() {
+    document.getElementById('pinModal').classList.add('show');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinError').textContent = '';
+    document.getElementById('pinInput').focus();
+  }
+
+  function hidePinModal() {
+    document.getElementById('pinModal').classList.remove('show');
+  }
+
+  // Confirm PIN button
+  document.getElementById('pinConfirmBtn').addEventListener('click', function() {
+    const pin = document.getElementById('pinInput').value.trim();
+    // For demo: accept any non-empty PIN (or any length >=4)
+    if (pin.length >= 4) {
+      hidePinModal();
+      // Proceed with payment
+      processPayment();
+    } else {
+      document.getElementById('pinError').textContent = 'Please enter at least 4 digits (or click Skip).';
+    }
+  });
+
+  // Skip PIN (demo)
+  document.getElementById('pinSkipBtn').addEventListener('click', function() {
+    hidePinModal();
+    processPayment();
+  });
+
+  // Allow Enter key on PIN input
+  document.getElementById('pinInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('pinConfirmBtn').click();
+    }
+  });
+
+  // =================================================================
+  // 6. PAYMENT PROCESSING (triggered after PIN or skip)
+  // =================================================================
+  function processPayment() {
+    if (!validateForm()) return;
+
+    const btn = document.getElementById('payNowBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+    // Update progress tracker to "Payment" step
+    document.querySelectorAll('.progress-step')[1].classList.add('active');
+
+    const delay = 1500 + Math.random() * 1500;
+    setTimeout(() => {
+      const success = Math.random() > 0.2;
+      if (success) {
+        // SUCCESS
+        btn.innerHTML = '<i class="fas fa-check"></i> Payment Complete!';
+        btn.style.background = '#10b981';
+
+        // Mark progress steps
+        document.querySelectorAll('.progress-step').forEach((s, i) => {
+          if (i <= 2) { s.classList.add('completed'); s.classList.remove('active'); }
+        });
+
+        playSuccessSound();
+        launchConfetti();
+        showReceipt();
+
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fas fa-lock"></i> Pay Now – $138.24';
+          btn.style.background = '#f97316';
+          btn.disabled = false;
+        }, 3000);
+      } else {
+        // FAILURE
+        btn.innerHTML = '<i class="fas fa-times"></i> Payment Failed';
+        btn.style.background = '#ef4444';
+        showToast('Payment Failed', 'Something went wrong. Please try again.', true);
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fas fa-lock"></i> Pay Now – $138.24';
+          btn.style.background = '#f97316';
+          btn.disabled = false;
+        }, 2000);
+      }
+    }, delay);
+  }
+
+  // Click on Pay Now → show PIN modal first
+  document.getElementById('payNowBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    // If form invalid, don't show PIN
+    if (!validateForm()) return;
+    showPinModal();
+  });
+
+  // =================================================================
+  // 7. RECEIPT MODAL
+  // =================================================================
+  function showReceipt() {
+    const overlay = document.getElementById('successOverlay');
+    const txnId = '#TX-' + Date.now().toString(36).toUpperCase();
+    document.getElementById('txnId').textContent = txnId;
+    document.getElementById('txnDate').textContent = new Date().toLocaleString();
+    document.getElementById('txnAmount').textContent = '$138.24';
+    const activeCard = document.querySelector('.method-card.active');
+    const methodName = activeCard ? activeCard.querySelector('span').textContent : 'Card';
+    document.getElementById('txnMethod').textContent = methodName;
+    overlay.classList.add('show');
+  }
+
+  document.getElementById('closeModalBtn').addEventListener('click', function() {
+    document.getElementById('successOverlay').classList.remove('show');
+    document.getElementById('confettiContainer').innerHTML = '';
+  });
+
+  document.getElementById('closeSuccessBtn').addEventListener('click', function() {
+    showToast('Download', 'Receipt downloaded (simulated).', false);
+  });
+
+  // =================================================================
+  // 8. CONFETTI
+  // =================================================================
+  function launchConfetti() {
+    const container = document.getElementById('confettiContainer');
+    container.innerHTML = '';
+    const colors = ['#f97316', '#ea580c', '#fbbf24', '#34d399', '#60a5fa', '#a78bfa', '#f472b6'];
+    for (let i = 0; i < 80; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.top = '-10px';
+      piece.style.width = (Math.random() * 8 + 4) + 'px';
+      piece.style.height = (Math.random() * 8 + 4) + 'px';
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+      piece.style.animationDelay = (Math.random() * 1.5) + 's';
+      container.appendChild(piece);
+    }
+    setTimeout(() => { container.innerHTML = ''; }, 4000);
+  }
+
+  // =================================================================
+  // 9. SOUND (Web Audio)
+  // =================================================================
+  function playSuccessSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.3);
+      setTimeout(() => {
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.frequency.value = 1100;
+        osc2.type = 'sine';
+        gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc2.start(audioCtx.currentTime);
+        osc2.stop(audioCtx.currentTime + 0.2);
+      }, 150);
+    } catch (e) { /* ignore */ }
+  }
+
+  // =================================================================
+  // 10. TOAST (fallback)
+  // =================================================================
+  function showToast(title, desc, isError = false) {
+    if (typeof window.showToast === 'function') {
+      window.showToast(title, desc, isError);
+    } else {
+      alert(title + ': ' + desc);
+    }
+  }
+
+  // =================================================================
+  // 11. INIT
+  // =================================================================
+  window.addEventListener('load', function() {
+    document.getElementById('cardNumber').focus();
+    // Auto-select first method
+    document.querySelector('.method-card.active')?.classList.add('active');
+  });
+
+  // Expose to global scope for inline onclick
+  window.selectMethod = selectMethod;
+  window.togglePromo = togglePromo;
+  window.applyPromo = applyPromo;
+  window.showToast = showToast;
+</script>
+
+{% endblock %}

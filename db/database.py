@@ -20,7 +20,9 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     email_verified = Column(Boolean, default=False)
     phone_verified = Column(Boolean, default=False)
+    profile_pic = Column(String, nullable=True)
 
+     
     # Relationships - FIXED: Use back_populates instead of backref to avoid conflicts
     details = relationship("UserDetails", back_populates="user", uselist=False, cascade="all, delete-orphan")
     otps = relationship("OTPVerification", back_populates="user", cascade="all, delete-orphan")

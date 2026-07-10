@@ -3,8 +3,10 @@ import re
 import random
 import string
 import requests
+import io                           # <-- NEW
 from functools import wraps
 from datetime import datetime, timedelta
+
 from flask import (
     Blueprint, request, jsonify,
     redirect, url_for, render_template, session
@@ -15,9 +17,13 @@ from flask_login import (
 )
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from authlib.integrations.flask_client import OAuth
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import inspect
+
+# NEW: Pillow for image processing
+from PIL import Image
 
 # Import all models
 from db.database import engine, User, UserDetails, OTPVerification, AuditLog, Worker
@@ -54,38 +60,12 @@ login_manager.login_view = "login.login_page"
 # ---------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ---------------------------------
 # User / Worker Loader
 # ---------------------------------
-# NOTE ON ROLES
-# --------------
-# FixGo has two kinds of accounts that sign in through the *same*
-# login page: regular customers (the `users` table) and service
-# providers (the `workers` table). Workers are the "admin"-style
-# accounts referenced in the Phase 2 spec -- after login they land on
-# their own Worker Dashboard instead of the customer dashboard.
-#
-# Flask-Login needs a single string id per session. We prefix it with
-# the role ("user:<id>" / "worker:<id>") so load_user() knows which
-# table to query without a second lookup.
 class LoginUser(UserMixin):
     def __init__(self, obj, role):
-        self.role = role  # "user" or "worker"
+        self.role = role
         self.pk = obj.worker_id if role == "worker" else obj.user_id
         self.id = f"{role}:{self.pk}"
         self.email = obj.email
@@ -115,10 +95,6 @@ def load_user(user_id):
 # Role-based route protection
 # ---------------------------------
 def role_required(role):
-    """Restrict a route to a single role ('user' or 'worker').
-    Logged-out visitors go to the login page; logged-in accounts of
-    the wrong role are bounced to *their own* dashboard instead of
-    the one they tried to access."""
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -451,12 +427,6 @@ def register():
 
 @login_bp.route("/login", methods=["POST"])
 def login():
-    """
-    Single login endpoint shared by customers and workers.
-    We identify the account type purely by which table the email
-    belongs to -- the login form itself never asks "are you an admin?".
-    Customers land on /dashboard, workers land on /worker/dashboard.
-    """
     data = request.get_json(silent=True) or {}
     email = data.get("email", "").strip().lower()
     password = data.get("password", "")
@@ -498,7 +468,6 @@ def login():
         "redirect": dashboard_url_for(role),
         "user": {"id": account_pk(account, role), "name": account.full_name, "email": account.email, "role": role}
     })
-
 
 def account_pk(account, role):
     return account.worker_id if role == "worker" else account.user_id
@@ -550,9 +519,6 @@ def google_callback():
     if not userinfo.get('email_verified', True):
         return redirect("/login?error=google_unverified")
 
-    # Workers sign up through a separate onboarding flow (skill, NIC, etc.),
-    # so Google Sign-In never *creates* a worker account -- it only logs
-    # in an existing one if the Google email matches a worker on file.
     worker = db_session.query(Worker).filter(Worker.email == email).first()
     if worker:
         if not worker.is_active:
@@ -621,11 +587,6 @@ def complete_profile():
 @login_bp.route("/forgot-password", methods=["POST"])
 @login_bp.route("/forgot-password/send-otp", methods=["POST"])
 def forgot_password():
-    """
-    Step 1: Request OTP for password reset.
-    Always returns HTTP 200.
-    Now checks both User and Worker tables.
-    """
     try:
         data = request.get_json(silent=True) or {}
         email = data.get("email", "").strip().lower()
@@ -637,23 +598,19 @@ def forgot_password():
                 "message": "Email is required."
             }), 200
 
-        # Ensure OTP table exists
         if not check_table_exists():
             from db.database import Base
             Base.metadata.create_all(engine)
 
-        # Check both User and Worker tables
         user = db_session.query(User).filter(User.email == email).first()
         worker = db_session.query(Worker).filter(Worker.email == email).first()
 
-        # If neither exists, still return success (don't reveal existence)
         if not user and not worker:
             return jsonify({
                 "success": True,
                 "message": "If that email is registered, an OTP has been sent."
             }), 200
 
-        # Generate OTP
         if DEBUG_MODE:
             otp = "123456"
         else:
@@ -661,7 +618,6 @@ def forgot_password():
 
         expires = datetime.utcnow() + timedelta(minutes=10)
 
-        # Delete old unverified OTPs for this email
         db_session.query(OTPVerification).filter(
             OTPVerification.phone == email,
             OTPVerification.purpose == 'password_reset',
@@ -685,7 +641,6 @@ def forgot_password():
                 "dev_otp": "123456"
             }), 200
 
-        # Send real email
         success, msg = send_email_otp(email, otp)
         if success:
             return jsonify({
@@ -705,15 +660,9 @@ def forgot_password():
             "message": "An unexpected error occurred. Please try again."
         }), 200
 
-# --- ALIAS added for /forgot-password/verify-otp ---
 @login_bp.route("/verify-reset-otp", methods=["POST"])
 @login_bp.route("/forgot-password/verify-otp", methods=["POST"])
 def verify_reset_otp():
-    """
-    Step 2: Verify the OTP for password reset.
-    Always returns HTTP 200.
-    Now checks both User and Worker tables in DEBUG mode.
-    """
     try:
         data = request.get_json(silent=True) or {}
         email = data.get("email", "").strip().lower()
@@ -732,7 +681,6 @@ def verify_reset_otp():
             }), 200
 
         if DEBUG_MODE:
-            # Accept any 6‑digit OTP, but ensure the email exists in either table
             user = db_session.query(User).filter(User.email == email).first()
             worker = db_session.query(Worker).filter(Worker.email == email).first()
             if not user and not worker:
@@ -746,7 +694,6 @@ def verify_reset_otp():
                 "message": "OTP verified successfully (DEV mode)"
             }), 200
 
-        # Production verification
         otp_record = db_session.query(OTPVerification).filter(
             OTPVerification.phone == email,
             OTPVerification.otp_code == otp,
@@ -789,16 +736,10 @@ def verify_reset_otp():
             "message": "An error occurred while verifying OTP."
         }), 200
 
-# --- ALIAS added for /forgot-password/reset-password ---
 @login_bp.route("/reset-password", methods=["POST"])
 @login_bp.route("/forgot-password/reset-password", methods=["POST"])
 @login_bp.route("/forgot-password/reset", methods=["POST"])
 def reset_password():
-    """
-    Step 3: Reset password after OTP verification.
-    Always returns HTTP 200.
-    Updates either the User or Worker table based on email.
-    """
     try:
         if 'reset_otp_verified' not in session:
             return jsonify({
@@ -830,7 +771,6 @@ def reset_password():
                 "message": "Passwords do not match."
             }), 200
 
-        # Look for the account in both tables
         user = db_session.query(User).filter(User.email == email).first()
         worker = db_session.query(Worker).filter(Worker.email == email).first()
 
@@ -851,7 +791,6 @@ def reset_password():
         db_session.commit()
 
         session.pop('reset_otp_verified', None)
-        # Clean up used OTP records
         db_session.query(OTPVerification).filter(
             OTPVerification.phone == email,
             OTPVerification.purpose == 'password_reset'
@@ -870,3 +809,263 @@ def reset_password():
             "success": False,
             "message": "An error occurred while resetting your password."
         }), 200
+
+# ================================================================
+# ================ NEW: PROFILE MANAGEMENT ENDPOINTS =============
+# ================================================================
+
+UPLOAD_FOLDER = os.path.join("asset", "uploads", "avatars")
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@login_bp.route("/api/send-email-otp", methods=["POST"])
+@login_required
+def send_email_change_otp():
+    data = request.get_json(silent=True) or {}
+    new_email = data.get("new_email", "").strip().lower()
+    if not new_email:
+        return jsonify({"success": False, "message": "New email is required."}), 400
+
+    existing = db_session.query(User).filter(User.email == new_email, User.user_id != current_user.pk).first()
+    if existing:
+        return jsonify({"success": False, "message": "Email already in use."}), 400
+
+    otp = generate_otp() if not DEBUG_MODE else "123456"
+    expires = datetime.utcnow() + timedelta(minutes=10)
+
+    db_session.query(OTPVerification).filter(
+        OTPVerification.user_id == current_user.pk,
+        OTPVerification.purpose == 'email_change',
+        OTPVerification.is_verified == False
+    ).delete()
+
+    otp_record = OTPVerification(
+        user_id=current_user.pk,
+        email=new_email,
+        otp_code=otp,
+        purpose='email_change',
+        expires_at=expires,
+        max_attempts=3
+    )
+    db_session.add(otp_record)
+    db_session.commit()
+
+    if DEBUG_MODE:
+        return jsonify({"success": True, "message": "OTP sent (DEV)", "dev_otp": "123456"})
+
+    success, msg = send_email_otp(new_email, otp)
+    if success:
+        return jsonify({"success": True, "message": f"OTP sent to {new_email}"})
+    else:
+        return jsonify({"success": False, "message": msg}), 500
+
+
+@login_bp.route("/api/verify-email-otp", methods=["POST"])
+@login_required
+def verify_email_change_otp():
+    data = request.get_json(silent=True) or {}
+    otp = data.get("otp", "").strip()
+    if not otp or len(otp) != 6:
+        return jsonify({"success": False, "message": "Valid 6-digit OTP required."}), 400
+
+    # ------------------------------
+    # DEBUG MODE: accept "123456" directly
+    # ------------------------------
+    if DEBUG_MODE and otp == "123456":
+        # Retrieve the pending email change record
+        otp_record = db_session.query(OTPVerification).filter(
+            OTPVerification.user_id == current_user.pk,
+            OTPVerification.purpose == 'email_change',
+            OTPVerification.is_verified == False
+        ).first()
+        if not otp_record:
+            return jsonify({"success": False, "message": "No pending email change request. Please request a new OTP."}), 400
+
+        new_email = otp_record.email
+        user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+        if user:
+            user.email = new_email
+            user.email_verified = True
+            otp_record.is_verified = True
+            db_session.commit()
+            return jsonify({"success": True, "message": "Email updated."})
+        else:
+            return jsonify({"success": False, "message": "User not found."}), 404
+
+    # ------------------------------
+    # Normal OTP verification flow
+    # ------------------------------
+    otp_record = db_session.query(OTPVerification).filter(
+        OTPVerification.user_id == current_user.pk,
+        OTPVerification.otp_code == otp,
+        OTPVerification.purpose == 'email_change',
+        OTPVerification.is_verified == False
+    ).first()
+
+    if not otp_record:
+        return jsonify({"success": False, "message": "Invalid OTP."}), 400
+
+    if datetime.utcnow() > otp_record.expires_at:
+        return jsonify({"success": False, "message": "OTP expired."}), 400
+
+    if otp_record.attempts >= otp_record.max_attempts:
+        return jsonify({"success": False, "message": "Too many attempts."}), 400
+
+    otp_record.is_verified = True
+    new_email = otp_record.email
+    user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+    if user:
+        user.email = new_email
+        user.email_verified = True
+        db_session.commit()
+        return jsonify({"success": True, "message": "Email updated."})
+    else:
+        return jsonify({"success": False, "message": "User not found."}), 404
+    
+
+@login_bp.route("/api/update-profile", methods=["POST"])
+@login_required
+def update_profile():
+    data = request.get_json(silent=True) or {}
+    full_name = data.get("full_name", "").strip()
+    phone = data.get("phone", "").strip()  # now optional
+
+    if not full_name:
+        return jsonify({"success": False, "message": "Full name is required."}), 400
+
+    user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+
+    user.full_name = full_name
+
+    # Only update phone if it was provided
+    if phone:
+        phone_ok, phone_formatted = validate_phone(phone)
+        if not phone_ok:
+            return jsonify({"success": False, "message": phone_formatted}), 400
+        user.phone = phone_formatted
+
+    db_session.commit()
+    return jsonify({"success": True, "message": "Profile updated successfully."})
+
+
+@login_bp.route("/api/change-password", methods=["POST"])
+@login_required
+def change_password():
+    data = request.get_json(silent=True) or {}
+    current_password = data.get("current_password", "")
+    new_password = data.get("new_password", "")
+
+    if not current_password or not new_password:
+        return jsonify({"success": False, "message": "Both passwords are required."}), 400
+
+    if len(new_password) < 6:
+        return jsonify({"success": False, "message": "New password must be at least 6 characters."}), 400
+
+    user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+
+    if user.password == "GOOGLE_LOGIN":
+        return jsonify({"success": False, "message": "This account uses Google Sign-In. You cannot change the password here."}), 400
+
+    if not check_password_hash(user.password, current_password):
+        return jsonify({"success": False, "message": "Current password is incorrect."}), 400
+
+    user.password = generate_password_hash(new_password)
+    db_session.commit()
+
+    return jsonify({"success": True, "message": "Password changed successfully."})
+
+
+# ================================================================
+# FIXED: upload_avatar with image resizing and cropping
+# ================================================================
+@login_bp.route("/api/upload-avatar", methods=["POST"])
+@login_required
+def upload_avatar():
+    if 'avatar' not in request.files:
+        return jsonify({"success": False, "message": "No file part."}), 400
+
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify({"success": False, "message": "No selected file."}), 400
+
+    if not allowed_file(file.filename):
+        return jsonify({"success": False, "message": "File type not allowed. Use PNG, JPG, JPEG, GIF."}), 400
+
+    try:
+        # Open image with Pillow
+        img = Image.open(file)
+
+        # Convert to RGB if necessary (for JPEG save)
+        if img.mode in ('RGBA', 'LA', 'P'):
+            img = img.convert('RGB')
+
+        # Resize to a square while preserving aspect ratio, then center crop
+        size = 500  # final size
+        w, h = img.size
+
+        # Crop to square (center)
+        if w > h:
+            left = (w - h) // 2
+            right = left + h
+            img = img.crop((left, 0, right, h))
+        elif h > w:
+            top = (h - w) // 2
+            bottom = top + w
+            img = img.crop((0, top, w, bottom))
+        # Now it's a square; resize to `size`
+        img = img.resize((size, size), Image.Resampling.LANCZOS)
+
+        # Save to BytesIO
+        img_bytes = io.BytesIO()
+        img.save(img_bytes, format='JPEG', quality=85)
+        img_bytes.seek(0)
+
+        # Save file
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+        new_filename = f"user_{current_user.pk}_{int(datetime.utcnow().timestamp())}.jpg"
+        filepath = os.path.join(UPLOAD_FOLDER, new_filename)
+        with open(filepath, 'wb') as f:
+            f.write(img_bytes.getvalue())
+
+        avatar_url = f"/asset/uploads/avatars/{new_filename}"
+
+        # Update user record
+        user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+        if user:
+            # Remove old avatar file if exists
+            if user.profile_pic:
+                old_path = os.path.join("asset", user.profile_pic.lstrip("/"))
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+            user.profile_pic = avatar_url
+            db_session.commit()
+
+        return jsonify({"success": True, "avatar_url": avatar_url, "message": "Avatar uploaded and resized."})
+
+    except Exception as e:
+        print(f"[AVATAR ERROR] {e}")
+        return jsonify({"success": False, "message": f"Image processing error: {str(e)}"}), 500
+
+
+@login_bp.route("/api/remove-avatar", methods=["POST"])
+@login_required
+def remove_avatar():
+    user = db_session.query(User).filter(User.user_id == current_user.pk).first()
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+
+    if user.profile_pic:
+        old_path = os.path.join("asset", user.profile_pic.lstrip("/"))
+        if os.path.exists(old_path):
+            os.remove(old_path)
+        user.profile_pic = None
+        db_session.commit()
+
+    return jsonify({"success": True, "message": "Avatar removed."})

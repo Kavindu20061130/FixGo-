@@ -1,0 +1,6 @@
+﻿google.md
+__pycache__/
+*.pyc
+asset/uploads/
+db/fixgo.db
+fixgo.db

@@ -1,13 +1,282 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FixGo – Dashboard</title>
-</head>
-<body>
-  <h1>Welcome, {{ user_name }}!</h1>
-  <p>Email: {{ user_email }}</p>
-  <a href="/logout">Logout</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard">
+
+    <!-- =========================================================
+         HERO
+         Charcoal "work order" panel with a blueprint-grid backdrop
+         and an orbiting scan ring around the FixGo mark.
+         ========================================================= -->
+    <section class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+
+        <div class="hero-main">
+            <span class="hero-eyebrow">
+                <span class="live-dot" aria-hidden="true"></span>
+                Dashboard &middot; live
+            </span>
+
+            <h1>Welcome back, <span class="hero-name">{{ user_name }}</span></h1>
+            <p class="hero-sub">
+                Your smart home-service control panel. Track jobs, workers, and platform
+                health for <strong>FixGo AI</strong> in real time.
+            </p>
+
+            <div class="hero-actions">
+                <button class="btn-primary">
+                    <span>Explore services</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="btn-ghost">View my bookings</button>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="{{ url_for('static', filename='images/icon.png') }}" alt="FixGo AI">
+        </div>
+    </section>
+
+    <!-- =========================================================
+         STAT METERS
+         Jobs / workers / users get an icon-badge readout; rating
+         gets a genuine radial dial since it maps to a real 0–100%.
+         ========================================================= -->
+    <section class="stats" aria-label="Platform statistics">
+
+        <div class="meter">
+            <span class="meter-icon" aria-hidden="true">🛠️</span>
+            <h2 id="jobs" data-counter-target="{{ stats.jobs_completed }}">0</h2>
+            <p>Jobs completed</p>
+        </div>
+
+        <div class="meter">
+            <span class="meter-icon" aria-hidden="true">👷</span>
+            <h2 id="workers" data-counter-target="{{ stats.active_workers }}">0</h2>
+            <p>Trusted workers</p>
+        </div>
+
+        <div class="meter">
+            <span class="meter-icon" aria-hidden="true">🧑‍🤝‍🧑</span>
+            <h2 id="users" data-counter-target="{{ stats.active_users }}">0</h2>
+            <p>Active users</p>
+        </div>
+
+        <div class="meter meter-rating"
+             style="--pct: {{ (stats.avg_rating / 5 * 100) if stats.avg_rating else 0 }}%;">
+            <div class="meter-ring" aria-hidden="true">
+                <h2 id="rating" data-counter-target="{{ stats.avg_rating }}">0</h2>
+            </div>
+            <p>Average rating <span class="meter-max">/ 5</span></p>
+        </div>
+
+    </section>
+
+    <!-- =========================================================
+         JOB PIPELINE — "work order" ticket
+         Perforated edge + stamped step numbers reflect the real,
+         genuinely sequential status of a booking.
+         ========================================================= -->
+    <section class="pipeline-section">
+        <div class="section-head">
+            <h2>Job pipeline</h2>
+            <span class="section-note">
+                {% if stats.total_bookings %}
+                    {{ stats.total_bookings }} booking{{ 's' if stats.total_bookings != 1 else '' }} tracked
+                {% else %}
+                    No bookings yet
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="pipeline">
+
+            <div class="pipeline-step">
+                <div class="pipeline-label">
+                    <span class="step-index">01</span>
+                    <span>Requested</span>
+                    <strong>{{ stats.progress.requested }}%</strong>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" data-width="{{ stats.progress.requested }}"></div>
+                </div>
+            </div>
+
+            <div class="pipeline-step">
+                <div class="pipeline-label">
+                    <span class="step-index">02</span>
+                    <span>Accepted</span>
+                    <strong>{{ stats.progress.accepted }}%</strong>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" data-width="{{ stats.progress.accepted }}"></div>
+                </div>
+            </div>
+
+            <div class="pipeline-step">
+                <div class="pipeline-label">
+                    <span class="step-index">03</span>
+                    <span>In progress</span>
+                    <strong>{{ stats.progress.in_progress }}%</strong>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" data-width="{{ stats.progress.in_progress }}"></div>
+                </div>
+            </div>
+
+            <div class="pipeline-step">
+                <div class="pipeline-label">
+                    <span class="step-index">04</span>
+                    <span>Completed</span>
+                    <strong>{{ stats.progress.completed }}%</strong>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-done" data-width="{{ stats.progress.completed }}"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FEATURE TILES
+         Core product actions. Each accent color is assigned via
+         CSS nth-child so no extra markup/classes are needed.
+         ========================================================= -->
+    <section class="cards-grid">
+
+        <a class="dashboard-card" href="#">
+            <span class="card-icon">🤖</span>
+            <h3>AI Assistant</h3>
+            <p>Upload a photo and let AI identify household problems and recommend solutions.</p>
+            <span class="card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+        </a>
+
+        <a class="dashboard-card" href="#">
+            <span class="card-icon">📋</span>
+            <h3>Bookings</h3>
+            <p>Track all your ongoing and completed bookings.</p>
+            <span class="card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+        </a>
+
+        <a class="dashboard-card" href="#">
+            <span class="card-icon">💳</span>
+            <h3>Payments</h3>
+            <p>Secure payments with complete transaction history.</p>
+            <span class="card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+        </a>
+
+        <a class="dashboard-card" href="#">
+            <span class="card-icon">💬</span>
+            <h3>Messages</h3>
+            <p>Chat instantly with service providers.</p>
+            <span class="card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+        </a>
+
+    </section>
+
+    <!-- =========================================================
+         SERVICE HIGHLIGHTS
+         New, purely presentational strip introducing the trades
+         FixGo AI covers — adds no logic, so behaviour is unaffected.
+         ========================================================= -->
+    <section class="services-section">
+        <div class="section-head">
+            <h2>Popular services</h2>
+            <span class="section-note">Book in a few taps</span>
+        </div>
+        <div class="services-strip">
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">⚡</span>
+                <span class="chip-label">Electrician</span>
+            </div>
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">🚰</span>
+                <span class="chip-label">Plumber</span>
+            </div>
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">🧹</span>
+                <span class="chip-label">Cleaner</span>
+            </div>
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">🪚</span>
+                <span class="chip-label">Carpenter</span>
+            </div>
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">🎨</span>
+                <span class="chip-label">Painter</span>
+            </div>
+            <div class="service-chip">
+                <span class="chip-icon" aria-hidden="true">🌿</span>
+                <span class="chip-label">Gardener</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         ABOUT + ACTIVITY
+         ========================================================= -->
+    <div class="lower-grid">
+
+        <section class="about">
+            <h2>About FixGo AI</h2>
+            <p>
+                FixGo AI is an intelligent home service platform that connects users with
+                trusted professionals including electricians, plumbers, cleaners, carpenters,
+                painters, and many more. The platform uses Artificial Intelligence to analyze
+                household issues, recommend the correct service, and provide simple repair
+                guidance when appropriate. Users can search, compare, book, pay securely, and
+                communicate with workers in one place.
+            </p>
+            <p class="about-motto">"Fix it fast. Fix it right."</p>
+        </section>
+
+        <section class="timeline">
+            <div class="section-head">
+                <h2>Recent activity</h2>
+                <span class="section-note">Live feed</span>
+            </div>
+
+            {% if stats.recent_activity %}
+            <ul id="activity-list">
+                {% for item in stats.recent_activity %}
+                <li>
+                    <span class="log-dot" aria-hidden="true"></span>
+                    <span class="log-text">{{ item.action.replace('_', ' ')|capitalize }}</span>
+                    {% if item.details %}<span class="log-details">{{ item.details }}</span>{% endif %}
+                    <span class="log-time">{{ item.created_at }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <ul id="activity-list"></ul>
+            <p class="timeline-empty">No activity yet — your bookings and jobs will show up here.</p>
+            {% endif %}
+        </section>
+
+    </div>
+
+    <footer>
+        <h3>FixGo AI</h3>
+        <p>Fix it fast. Fix it right.</p>
+        <p id="clock"></p>
+    </footer>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock %}

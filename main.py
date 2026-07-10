@@ -1,8 +1,15 @@
 from flask import Flask
 from datetime import timedelta
+import os
 
-from backend.login import login_bp, login_manager, oauth, mail
+# Import db_session from login.py (where the session is created)
+from backend.login import login_bp, login_manager, oauth, mail, db_session
 from backend.home import home_bp
+from flask_login import current_user
+
+# Import models – User and Worker for the main user, UserDetails for completeness check
+from db.database import User, Worker, UserDetails
+
 
 # ---------------------------------
 # Flask App Setup
@@ -26,15 +33,7 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 
 # ---------------------------------
 # Flask-Mail Configuration
-# Use environment variables for credentials – never hard-code!
-# Set these in your .env / system environment:
-#   MAIL_SERVER      (e.g. smtp.gmail.com)
-#   MAIL_PORT        (e.g. 587)
-#   MAIL_USERNAME    (your Gmail address)
-#   MAIL_PASSWORD    (Gmail App Password – NOT your login password)
-#   MAIL_DEFAULT_SENDER (same as MAIL_USERNAME usually)
 # ---------------------------------
-import os
 app.config["MAIL_SERVER"]          = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
 app.config["MAIL_PORT"]            = int(os.environ.get("MAIL_PORT", 587))
 app.config["MAIL_USE_TLS"]         = True
@@ -59,12 +58,57 @@ mail.init_app(app)
 app.register_blueprint(login_bp)
 app.register_blueprint(home_bp)
 
+
+# ============================================================
+# 🔧 Global context processor – injects full user + details
+# ============================================================
+@app.context_processor
+def inject_user():
+    """
+    Injects a full User or Worker object, the associated UserDetails
+    (if any), and a boolean 'has_details' into all templates.
+    This allows the UI to show a warning when profile information is missing.
+    """
+    if not current_user.is_authenticated:
+        return {'user': None, 'user_details': None, 'has_details': False}
+
+    role = getattr(current_user, 'role', None)
+    pk = getattr(current_user, 'pk', None)
+
+    user_obj = None
+    details_obj = None
+    has_details = False
+
+    if role == 'worker':
+        user_obj = db_session.query(Worker).filter(Worker.worker_id == pk).first()
+        if user_obj:
+            user_obj.account_type = 'Worker'
+            user_obj.profile_pic = getattr(user_obj, 'profile_pic', None)
+        # Workers may have a different details table; for now, we treat them as complete
+        has_details = True
+    else:
+        user_obj = db_session.query(User).filter(User.user_id == pk).first()
+        if user_obj:
+            user_obj.account_type = 'Customer'
+            user_obj.profile_pic = getattr(user_obj, 'profile_pic', None)
+            # Check if this user has a record in UserDetails
+            details_obj = db_session.query(UserDetails).filter(UserDetails.user_id == pk).first()
+            has_details = details_obj is not None
+
+    return {
+        'user': user_obj,
+        'user_details': details_obj,
+        'has_details': has_details
+    }
+
+
 # ---------------------------------
 # Root route
 # ---------------------------------
 @app.route("/")
 def index():
     return "FixGo AI is running successfully 🚀"
+
 
 # ---------------------------------
 # Run Server

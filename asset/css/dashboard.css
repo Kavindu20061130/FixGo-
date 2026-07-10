@@ -1,0 +1,666 @@
+/* =========================================================================
+   FIXGO AI — DASHBOARD DESIGN SYSTEM
+   ---------------------------------------------------------------------
+   Concept  : "Digital work order" — the dashboard borrows its visual
+              language from a technician's job ticket: perforated
+              edges, stamped mono-space numerals, dial-style gauges
+              and dashed routing lines, layered over a clean modern
+              SaaS shell. It's meant to feel like FixGo AI itself —
+              part toolbox, part control room.
+   Palette  : --ink   #12161C  (toolbody charcoal, hero + stamps)
+              --brand #FF6A3D  (FixGo signal orange)
+              --brand2#FFB199  (warm highlight)
+              --teal  #17B897  (verified / trust / completed)
+              --paper #F5F6F9  (page canvas)
+   Type     : Poppins   -> display / headings (rounded, friendly, technical)
+              Inter     -> body copy (neutral, highly legible)
+              IBM Plex Mono -> data, stamps, tickets, timestamps
+   ========================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+
+/* -------------------------------------------------------------------------
+   0. DESIGN TOKENS
+   All colors, radii and shadows are declared once on .dashboard so the
+   whole panel can be re-themed from a single place.
+   ------------------------------------------------------------------------- */
+.dashboard {
+    /* -- core palette -- */
+    --ink:        #12161C;   /* charcoal / hero background            */
+    --ink-2:      #1B212B;   /* charcoal panel, one step lighter      */
+    --paper:      #F5F6F9;   /* page background                       */
+    --surface:    #FFFFFF;   /* card background                       */
+    --brand:      #FF6A3D;   /* FixGo signal orange                   */
+    --brand-2:    #FFB199;   /* warm highlight / gradient partner     */
+    --brand-deep: #E14F22;   /* pressed / deep accent                 */
+    --teal:       #17B897;   /* trust, verified, "completed" state    */
+    --teal-soft:  #E4FBF4;
+    --violet:     #7C6CF0;   /* AI / assistant accent                 */
+    --ink-soft:   #4A5261;   /* secondary text on light surfaces      */
+    --line:       rgba(18,22,28,.08);
+    --line-dark:  rgba(255,255,255,.10);
+
+    /* -- elevation -- */
+    --shadow-sm:  0 4px 14px rgba(18,22,28,.06);
+    --shadow-md:  0 14px 32px rgba(18,22,28,.10);
+    --shadow-lg:  0 26px 60px rgba(18,22,28,.16);
+    --shadow-brand: 0 14px 30px rgba(255,106,61,.32);
+
+    /* -- shape -- */
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 26px;
+    --r-pill: 999px;
+
+    /* -- layout -- */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 28px clamp(16px, 4vw, 48px) 72px;
+    max-width: 1280px;
+    margin: 0 auto;
+    animation: dash-in .7s cubic-bezier(.22,1,.36,1) both;
+}
+
+.dashboard h1,
+.dashboard h2,
+.dashboard h3 {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--ink);
+}
+
+.dashboard a { color: inherit; }
+
+@keyframes dash-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard, .dashboard * {
+        animation-duration: .001ms !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   1. HERO
+   Blueprint-grid charcoal panel. A dashed "scan ring" orbits the mark
+   to suggest the AI actively reading/diagnosing a job.
+   ------------------------------------------------------------------------- */
+.hero {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    padding: 52px clamp(24px, 5vw, 64px);
+    margin-bottom: 24px;
+    background:
+        radial-gradient(circle at 14% 18%, rgba(255,106,61,.16), transparent 42%),
+        linear-gradient(155deg, var(--ink) 0%, var(--ink-2) 100%);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+/* faint blueprint grid — reinforces the "schematic / diagnostic" idea */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 34px 34px;
+    -webkit-mask-image: radial-gradient(circle at 30% 30%, #000 0%, transparent 68%);
+            mask-image: radial-gradient(circle at 30% 30%, #000 0%, transparent 68%);
+    pointer-events: none;
+}
+
+.hero-glow {
+    position: absolute;
+    top: -140px;
+    right: -90px;
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, rgba(255,106,61,.38) 0%, rgba(255,106,61,0) 70%);
+    pointer-events: none;
+}
+
+.hero-main { position: relative; z-index: 1; max-width: 580px; }
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--brand-2);
+    background: rgba(255,106,61,.14);
+    border: 1px solid rgba(255,106,61,.32);
+    padding: 7px 14px 7px 10px;
+    border-radius: var(--r-pill);
+    margin-bottom: 20px;
+}
+
+.live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--teal);
+    box-shadow: 0 0 0 0 rgba(23,184,151,.6);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(23,184,151,.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(23,184,151,0); }
+    100% { box-shadow: 0 0 0 0   rgba(23,184,151,0); }
+}
+
+.hero h1 {
+    font-size: clamp(28px, 3.6vw, 40px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+}
+.hero-name {
+    background: linear-gradient(90deg, var(--brand-2), var(--brand));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-sub {
+    color: #A9B1BE;
+    font-size: 15.5px;
+    line-height: 1.65;
+    margin: 16px 0 30px;
+    max-width: 480px;
+}
+.hero-sub strong { color: #fff; font-weight: 600; }
+
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn-primary {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border: none;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #1A0D06;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 14px 24px;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: var(--shadow-brand);
+}
+.btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 18px 34px rgba(255,106,61,.42); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.btn-primary svg { transition: transform .25s ease; }
+.btn-primary:hover svg { transform: translateX(3px); }
+
+.btn-ghost {
+    border: 1px solid var(--line-dark);
+    background: rgba(255,255,255,.03);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease, transform .25s ease;
+}
+.btn-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.28); transform: translateY(-2px); }
+.btn-ghost:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* hero mark + orbiting scan ring */
+.hero-image {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 190px;
+    height: 190px;
+    display: grid;
+    place-items: center;
+}
+.hero-image::before,
+.hero-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(255,178,153,.35);
+}
+.hero-image::before { animation: spin 22s linear infinite; }
+.hero-image::after   { inset: 22px; border-color: rgba(23,184,151,.3); animation: spin 16s linear infinite reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hero-image img {
+    position: relative;
+    z-index: 1;
+    width: 116px;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 14px 22px rgba(0,0,0,.4));
+}
+@keyframes float { 50% { transform: translateY(-10px); } }
+
+@media (max-width: 720px) {
+    .hero { flex-direction: column; text-align: center; align-items: center; }
+    .hero-actions { justify-content: center; }
+    .hero-sub { margin-left: auto; margin-right: auto; }
+}
+
+/* -------------------------------------------------------------------------
+   2. STAT METERS
+   Icon badge + big mono readout. The rating card alone earns a real
+   radial dial, since it's the only stat with genuine 0–100% meaning.
+   ------------------------------------------------------------------------- */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 18px;
+    margin: 24px 0;
+}
+
+.meter {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 26px 24px;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-sm);
+    transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s ease, border-color .28s ease;
+    overflow: hidden;
+}
+.meter:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255,106,61,.25);
+}
+
+.meter-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 42px; height: 42px;
+    font-size: 18px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    background: linear-gradient(150deg, rgba(255,106,61,.14), rgba(255,106,61,.04));
+}
+
+.meter h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.1;
+}
+
+.meter p {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+}
+
+.meter-max { opacity: .55; font-weight: 400; }
+
+/* rating card: real radial dial driven by --pct (set inline from Jinja) */
+.meter-rating {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.meter-rating .meter-icon { display: none; }
+.meter-ring {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    background: conic-gradient(var(--brand) var(--pct, 0%), var(--line) 0);
+    display: grid;
+    place-items: center;
+    transition: background 1s cubic-bezier(.22,1,.36,1);
+}
+.meter-ring::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    background: var(--surface);
+    border-radius: 50%;
+}
+.meter-rating h2 {
+    position: relative;
+    z-index: 1;
+    font-size: 26px;
+}
+.meter-rating p { order: 3; }
+
+/* -------------------------------------------------------------------------
+   3. JOB PIPELINE — signature "work-order ticket"
+   Styled like a technician's service docket: perforated left edge,
+   stamped step numbers, dashed routing line, orange/teal fill gauges.
+   ------------------------------------------------------------------------- */
+.section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.section-head h2 { font-size: 20px; font-weight: 700; }
+.section-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: .02em;
+}
+
+.pipeline-section {
+    position: relative;
+    background: var(--surface);
+    padding: 34px clamp(24px, 4vw, 44px) 34px 40px;
+    border-radius: var(--r-lg);
+    margin: 32px 0;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* perforated ticket edge on the left */
+.pipeline-section::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 14px;
+    background-image: radial-gradient(circle, var(--paper) 3.5px, transparent 3.6px);
+    background-size: 14px 22px;
+    background-position: -1px 0;
+}
+
+.pipeline { display: flex; flex-direction: column; gap: 22px; }
+
+.pipeline-step { position: relative; }
+
+.pipeline-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 9px;
+}
+.pipeline-label strong {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--brand);
+    font-size: 13px;
+    font-weight: 700;
+}
+.step-index {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--ink);
+    border-radius: 6px;
+    padding: 3px 7px;
+    letter-spacing: .04em;
+}
+
+.progress { height: 10px; background: #EEF0F3; border-radius: var(--r-pill); overflow: hidden; }
+.progress-bar {
+    width: 0;
+    height: 100%;
+    border-radius: var(--r-pill);
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    transition: width 1.1s cubic-bezier(.22,1,.36,1);
+}
+.progress-bar-done { background: linear-gradient(90deg, var(--teal), #5EE2C4); }
+
+/* -------------------------------------------------------------------------
+   4. FEATURE TILES
+   Core product actions as bold, tappable tickets with a gradient
+   icon badge and an animated "go" arrow.
+   ------------------------------------------------------------------------- */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.dashboard-card {
+    position: relative;
+    display: block;
+    background: var(--surface);
+    padding: 28px;
+    border-radius: var(--r-md);
+    text-align: left;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--line);
+    transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s ease, border-color .28s ease;
+    box-shadow: var(--shadow-sm);
+}
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(255,106,61,.28);
+}
+.dashboard-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+.card-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 48px; height: 48px;
+    font-size: 22px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    background: linear-gradient(150deg, var(--brand), var(--brand-2));
+    box-shadow: 0 8px 18px rgba(255,106,61,.28);
+}
+/* alternate accent per-tile keeps the grid from feeling monotone,
+   applied via nth-child rather than extra markup/classes */
+.cards-grid .dashboard-card:nth-child(2) .card-icon { background: linear-gradient(150deg, var(--teal), #5EE2C4); box-shadow: 0 8px 18px rgba(23,184,151,.28); }
+.cards-grid .dashboard-card:nth-child(3) .card-icon { background: linear-gradient(150deg, #2F3542, #4A5261); box-shadow: 0 8px 18px rgba(18,22,28,.28); }
+.cards-grid .dashboard-card:nth-child(4) .card-icon { background: linear-gradient(150deg, var(--violet), #A79BFF); box-shadow: 0 8px 18px rgba(124,108,240,.28); }
+
+.dashboard-card h3 {
+    font-size: 16.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.dashboard-card p {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0;
+}
+.card-arrow {
+    position: absolute;
+    top: 26px; right: 24px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink-soft);
+    transition: background .25s ease, color .25s ease, transform .25s ease;
+}
+.dashboard-card:hover .card-arrow {
+    background: var(--brand);
+    color: #fff;
+    transform: translate(2px, -2px);
+}
+
+/* -------------------------------------------------------------------------
+   5. SERVICE HIGHLIGHTS
+   New marketing strip introducing the trades FixGo AI covers.
+   Purely presentational — no dynamic data, so no template logic needed.
+   ------------------------------------------------------------------------- */
+.services-section { margin: 40px 0; }
+
+.services-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+.service-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 22px 14px;
+    transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+}
+.service-chip:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-sm);
+    background: linear-gradient(180deg, #fff, var(--paper));
+}
+.service-chip .chip-icon {
+    width: 44px; height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--teal-soft);
+    color: var(--teal);
+    font-size: 19px;
+}
+.service-chip span.chip-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+/* -------------------------------------------------------------------------
+   6. ABOUT + ACTIVITY FEED
+   ------------------------------------------------------------------------- */
+.lower-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 22px;
+    margin-top: 12px;
+}
+@media (max-width: 860px) { .lower-grid { grid-template-columns: 1fr; } }
+
+.about {
+    position: relative;
+    background: linear-gradient(165deg, var(--ink) 0%, var(--ink-2) 100%);
+    padding: 34px;
+    border-radius: var(--r-lg);
+    color: #fff;
+    overflow: hidden;
+}
+.about::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+    -webkit-mask-image: radial-gradient(circle at 90% 10%, #000 0%, transparent 60%);
+            mask-image: radial-gradient(circle at 90% 10%, #000 0%, transparent 60%);
+}
+.about h2 { color: #fff; position: relative; z-index: 1; margin-bottom: 14px; }
+.about p {
+    position: relative; z-index: 1;
+    color: #B7BFCB;
+    line-height: 1.75;
+    font-size: 14.5px;
+}
+.about-motto {
+    position: relative; z-index: 1;
+    font-family: 'Poppins', sans-serif;
+    color: var(--brand-2);
+    font-weight: 600;
+    font-size: 16.5px;
+    margin-top: 16px;
+}
+
+.timeline {
+    background: var(--surface);
+    padding: 32px;
+    border-radius: var(--r-lg);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+}
+
+#activity-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+#activity-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 13px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 13.5px;
+}
+#activity-list li:last-child { border-bottom: none; }
+.log-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); flex-shrink: 0; }
+.log-text { font-weight: 600; color: var(--ink); }
+.log-details { color: var(--ink-soft); }
+.log-time {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+}
+
+/* empty state for the activity feed */
+.timeline-empty {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+}
+
+/* -------------------------------------------------------------------------
+   7. FOOTER
+   ------------------------------------------------------------------------- */
+footer {
+    margin-top: 64px;
+    text-align: center;
+    color: var(--ink-soft);
+}
+footer h3 { font-size: 18px; color: var(--ink); font-weight: 700; }
+footer p { margin: 4px 0; font-size: 13.5px; }
+#clock {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+}
+
+/* -------------------------------------------------------------------------
+   8. RESPONSIVE FINE-TUNING
+   ------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+    .dashboard { padding: 20px 14px 56px; }
+    .meter h2 { font-size: 30px; }
+    .pipeline-section { padding-left: 30px; }
+    .card-arrow { display: none; }
+}

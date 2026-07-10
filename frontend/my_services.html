@@ -1,0 +1,2244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ====== PAGE STYLES ====== -->
+<style>
+    /* ---------- Variables ---------- */
+    :root {
+        --orange-50: #fff7ed;
+        --orange-100: #ffedd5;
+        --orange-200: #fed7aa;
+        --orange-300: #fdba74;
+        --orange-400: #fb923c;
+        --orange-500: #f97316;
+        --orange-600: #ea580c;
+        --orange-700: #c2410c;
+        --orange-800: #9a3412;
+        --orange-900: #7c2d12;
+        --glass-bg: rgba(255, 255, 255, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.25);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        --card-radius: 20px;
+        --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dark-mode {
+        --glass-bg: rgba(30, 30, 40, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        --bg-body: #0f0f1a;
+        --text-primary: #f1f1f6;
+        --text-secondary: #a8a8b8;
+        --card-bg: rgba(30, 30, 44, 0.8);
+        --border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ---------- Page Layout ---------- */
+    .my-services-page {
+        padding: 1.5rem 2rem 3rem;
+        max-width: 1440px;
+        margin: 0 auto;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.85rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--orange-500), var(--orange-700));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .page-header h1 i {
+        -webkit-text-fill-color: initial;
+        color: var(--orange-500);
+        font-size: 2rem;
+    }
+
+    .page-header__actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-emergency {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: #fff;
+        border: none;
+        padding: 0.6rem 1.4rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-emergency:hover {
+        transform: scale(1.04);
+        box-shadow: 0 6px 24px rgba(239, 68, 68, 0.45);
+    }
+
+    .btn-emergency i {
+        font-size: 1rem;
+    }
+
+    .btn-notification {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary, #1a1a2e);
+        font-size: 1.2rem;
+    }
+
+    .btn-notification:hover {
+        transform: scale(1.06);
+        border-color: var(--orange-400);
+    }
+
+    .btn-notification .badge-dot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 10px;
+        height: 10px;
+        background: #ef4444;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.3);
+        }
+    }
+
+    /* ---------- Stats Grid ---------- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--card-radius);
+        padding: 1.2rem 1.2rem 1rem;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--orange-400), var(--orange-600));
+        opacity: 0.6;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(249, 115, 22, 0.12);
+    }
+
+    .stat-card__icon {
+        font-size: 1.6rem;
+        color: var(--orange-500);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-card__number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+        color: var(--text-primary, #1a1a2e);
+    }
+
+    .stat-card__label {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #6b7280);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .stat-card--orange .stat-card__number {
+        color: var(--orange-600);
+    }
+    .stat-card--green .stat-card__number {
+        color: #16a34a;
+    }
+    .stat-card--blue .stat-card__number {
+        color: #2563eb;
+    }
+    .stat-card--gray .stat-card__number {
+        color: #6b7280;
+    }
+    .stat-card--red .stat-card__number {
+        color: #dc2626;
+    }
+    .stat-card--gold .stat-card__number {
+        color: #d97706;
+    }
+
+    /* ---------- Search & Filters ---------- */
+    .filter-bar {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--card-radius);
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--glass-shadow);
+        margin-bottom: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1rem;
+        transition: var(--transition);
+    }
+
+    .filter-bar__search {
+        flex: 1 1 260px;
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 50px;
+        padding: 0 1rem;
+        border: 1px solid transparent;
+        transition: var(--transition);
+    }
+
+    .dark-mode .filter-bar__search {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .filter-bar__search:focus-within {
+        border-color: var(--orange-400);
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.12);
+    }
+
+    .filter-bar__search i {
+        color: var(--text-secondary, #6b7280);
+        font-size: 1rem;
+        margin-right: 0.6rem;
+    }
+
+    .filter-bar__search input {
+        border: none;
+        background: transparent;
+        padding: 0.7rem 0;
+        font-size: 0.9rem;
+        width: 100%;
+        outline: none;
+        color: var(--text-primary, #1a1a2e);
+        font-family: inherit;
+    }
+
+    .filter-bar__search input::placeholder {
+        color: var(--text-secondary, #6b7280);
+    }
+
+    .filter-bar__filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .filter-bar__filters select {
+        padding: 0.5rem 1.8rem 0.5rem 1rem;
+        border-radius: 50px;
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(4px);
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-primary, #1a1a2e);
+        cursor: pointer;
+        outline: none;
+        transition: var(--transition);
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 0.8rem;
+    }
+
+    .dark-mode .filter-bar__filters select {
+        background-color: rgba(255, 255, 255, 0.06);
+        color: #f1f1f6;
+    }
+
+    .filter-bar__filters select:focus {
+        border-color: var(--orange-400);
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+    }
+
+    .filter-bar__clear {
+        background: none;
+        border: none;
+        color: var(--text-secondary, #6b7280);
+        font-size: 0.8rem;
+        cursor: pointer;
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+
+    .filter-bar__clear:hover {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+
+    /* ---------- Section Headers ---------- */
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin: 2rem 0 1.25rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-primary, #1a1a2e);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-header h2 i {
+        color: var(--orange-500);
+        font-size: 1.2rem;
+    }
+
+    .section-header__link {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--orange-500);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: var(--transition);
+    }
+
+    .section-header__link:hover {
+        color: var(--orange-700);
+        gap: 0.6rem;
+    }
+
+    /* ---------- Service Cards Grid ---------- */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .service-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--card-radius);
+        padding: 1.5rem;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease both;
+    }
+
+    .service-card:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+    .service-card:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+    .service-card:nth-child(3) {
+        animation-delay: 0.15s;
+    }
+    .service-card:nth-child(4) {
+        animation-delay: 0.2s;
+    }
+    .service-card:nth-child(5) {
+        animation-delay: 0.25s;
+    }
+    .service-card:nth-child(6) {
+        animation-delay: 0.3s;
+    }
+
+    .service-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        border-color: var(--orange-300);
+    }
+
+    .dark-mode .service-card:hover {
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Status badge */
+    .service-card__status {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.3rem 0.9rem;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .status-pending {
+        color: #d97706;
+        background: rgba(251, 191, 36, 0.18);
+        border-color: rgba(251, 191, 36, 0.3);
+    }
+    .status-accepted {
+        color: #2563eb;
+        background: rgba(59, 130, 246, 0.12);
+        border-color: rgba(59, 130, 246, 0.25);
+    }
+    .status-ontheway {
+        color: #7c3aed;
+        background: rgba(139, 92, 246, 0.14);
+        border-color: rgba(139, 92, 246, 0.25);
+    }
+    .status-progress {
+        color: #0891b2;
+        background: rgba(6, 182, 212, 0.14);
+        border-color: rgba(6, 182, 212, 0.25);
+    }
+    .status-completed {
+        color: #16a34a;
+        background: rgba(34, 197, 94, 0.14);
+        border-color: rgba(34, 197, 94, 0.25);
+    }
+    .status-cancelled {
+        color: #dc2626;
+        background: rgba(239, 68, 68, 0.12);
+        border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    /* Card top: worker + service name */
+    .service-card__top {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-right: 5rem;
+    }
+
+    .service-card__avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--orange-200), var(--orange-400));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-card__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .service-card__avatar .verified-badge {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 20px;
+        height: 20px;
+        background: #2563eb;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 0.5rem;
+    }
+
+    .service-card__worker {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .service-card__worker-name {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-primary, #1a1a2e);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .service-card__worker-name i {
+        color: #2563eb;
+        font-size: 0.75rem;
+    }
+
+    .service-card__worker-rating {
+        font-size: 0.8rem;
+        color: var(--text-secondary, #6b7280);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .service-card__worker-rating i {
+        color: #f59e0b;
+    }
+
+    .service-card__service-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary, #1a1a2e);
+        margin-top: 0.1rem;
+    }
+
+    /* Card body */
+    .service-card__body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin: 0.75rem 0 1rem;
+        font-size: 0.88rem;
+        color: var(--text-secondary, #4b5563);
+    }
+
+    .service-card__body .detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .service-card__body .detail-row i {
+        width: 1.1rem;
+        color: var(--orange-500);
+        font-size: 0.85rem;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+    }
+
+    .service-card__body .detail-row .label {
+        font-weight: 500;
+        color: var(--text-secondary, #6b7280);
+        margin-right: 0.2rem;
+    }
+
+    .service-card__body .detail-row .value {
+        color: var(--text-primary, #1a1a2e);
+        font-weight: 500;
+    }
+
+    .service-card__body .detail-row .value.orange {
+        color: var(--orange-600);
+    }
+    .service-card__body .detail-row .value.green {
+        color: #16a34a;
+    }
+    .service-card__body .detail-row .value.red {
+        color: #dc2626;
+    }
+
+    /* Payment status */
+    .payment-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(4px);
+    }
+
+    .payment-paid {
+        color: #16a34a;
+        background: rgba(34, 197, 94, 0.12);
+    }
+    .payment-pending {
+        color: #d97706;
+        background: rgba(251, 191, 36, 0.12);
+    }
+    .payment-partial {
+        color: #7c3aed;
+        background: rgba(139, 92, 246, 0.12);
+    }
+
+    /* Progress timeline */
+    .service-card__timeline {
+        margin: 0.75rem 0 1rem;
+        position: relative;
+        padding-left: 1.2rem;
+        border-left: 2px solid var(--orange-200);
+    }
+
+    .service-card__timeline .tl-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 0.78rem;
+        color: var(--text-secondary, #6b7280);
+        padding: 0.2rem 0;
+        position: relative;
+    }
+
+    .service-card__timeline .tl-item::before {
+        content: '';
+        position: absolute;
+        left: -1.3rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--orange-300);
+        border: 2px solid #fff;
+    }
+
+    .service-card__timeline .tl-item.active {
+        color: var(--text-primary, #1a1a2e);
+        font-weight: 600;
+    }
+
+    .service-card__timeline .tl-item.active::before {
+        background: var(--orange-500);
+        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+    }
+
+    .service-card__timeline .tl-item.done::before {
+        background: #16a34a;
+    }
+
+    /* Actions */
+    .service-card__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .service-card__actions .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.9rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: none;
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(4px);
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary, #4b5563);
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        font-family: inherit;
+    }
+
+    .service-card__actions .btn-action:hover {
+        background: var(--orange-500);
+        color: #fff;
+        border-color: var(--orange-500);
+        transform: scale(1.04);
+    }
+
+    .service-card__actions .btn-action.primary {
+        background: var(--orange-500);
+        color: #fff;
+        border-color: var(--orange-500);
+    }
+
+    .service-card__actions .btn-action.primary:hover {
+        background: var(--orange-600);
+        border-color: var(--orange-600);
+    }
+
+    .service-card__actions .btn-action.green {
+        background: #16a34a;
+        color: #fff;
+        border-color: #16a34a;
+    }
+    .service-card__actions .btn-action.green:hover {
+        background: #15803d;
+        border-color: #15803d;
+    }
+    .service-card__actions .btn-action.red {
+        background: #dc2626;
+        color: #fff;
+        border-color: #dc2626;
+    }
+    .service-card__actions .btn-action.red:hover {
+        background: #b91c1c;
+        border-color: #b91c1c;
+    }
+    .service-card__actions .btn-action.outline {
+        background: transparent;
+        border: 1px solid var(--orange-300);
+        color: var(--orange-600);
+    }
+    .service-card__actions .btn-action.outline:hover {
+        background: var(--orange-500);
+        color: #fff;
+        border-color: var(--orange-500);
+    }
+
+    .service-card__actions .btn-action i {
+        font-size: 0.8rem;
+    }
+
+    /* ---------- AI Recommendations ---------- */
+    .ai-recommendations {
+        background: linear-gradient(135deg, rgba(249, 115, 22, 0.06), rgba(249, 115, 22, 0.12));
+        border-radius: var(--card-radius);
+        padding: 1.5rem 2rem;
+        border: 1px solid rgba(249, 115, 22, 0.15);
+        margin: 2rem 0;
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .ai-recommendations__content {
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        flex-wrap: wrap;
+    }
+
+    .ai-recommendations__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--orange-400), var(--orange-600));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+
+    .ai-recommendations__text h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-primary, #1a1a2e);
+        margin: 0;
+    }
+
+    .ai-recommendations__text p {
+        font-size: 0.88rem;
+        color: var(--text-secondary, #6b7280);
+        margin: 0;
+    }
+
+    .ai-recommendations__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .ai-recommendations__tags .tag {
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(249, 115, 22, 0.15);
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-primary, #1a1a2e);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .ai-recommendations__tags .tag:hover {
+        background: var(--orange-500);
+        color: #fff;
+        border-color: var(--orange-500);
+    }
+
+    /* ---------- Charts Section ---------- */
+    .charts-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .chart-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--card-radius);
+        padding: 1.5rem;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+    }
+
+    .chart-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary, #1a1a2e);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chart-card h3 i {
+        color: var(--orange-500);
+    }
+
+    .chart-card canvas {
+        max-height: 200px;
+        width: 100% !important;
+    }
+
+    /* ---------- Recent History ---------- */
+    .history-list {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--card-radius);
+        padding: 1.25rem 1.5rem;
+        box-shadow: var(--glass-shadow);
+        margin: 1.5rem 0 2rem;
+    }
+
+    .history-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--glass-border);
+        transition: var(--transition);
+    }
+
+    .history-item:last-child {
+        border-bottom: none;
+    }
+
+    .history-item:hover {
+        padding-left: 0.5rem;
+    }
+
+    .history-item__left {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .history-item__icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: rgba(249, 115, 22, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--orange-500);
+        font-size: 0.9rem;
+    }
+
+    .history-item__info .h-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-primary, #1a1a2e);
+    }
+
+    .history-item__info .h-meta {
+        font-size: 0.78rem;
+        color: var(--text-secondary, #6b7280);
+    }
+
+    .history-item__status {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.2rem 0.8rem;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ---------- Floating Action ---------- */
+    .fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+        color: #fff;
+        border: none;
+        font-size: 1.5rem;
+        box-shadow: 0 8px 32px rgba(249, 115, 22, 0.4);
+        cursor: pointer;
+        transition: var(--transition);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fab:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 12px 48px rgba(249, 115, 22, 0.5);
+    }
+
+    /* ---------- Dark Mode Toggle ---------- */
+    .dark-toggle {
+        position: fixed;
+        bottom: 5.5rem;
+        right: 2rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: none;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 1.2rem;
+        color: var(--text-primary, #1a1a2e);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dark-toggle:hover {
+        transform: scale(1.08);
+        border-color: var(--orange-400);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1024px) {
+        .charts-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .my-services-page {
+            padding: 1rem 1rem 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.4rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.6rem;
+        }
+
+        .stat-card {
+            padding: 0.8rem 0.6rem;
+        }
+        .stat-card__number {
+            font-size: 1.4rem;
+        }
+        .stat-card__label {
+            font-size: 0.65rem;
+        }
+
+        .filter-bar {
+            padding: 1rem;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filter-bar__filters {
+            flex-wrap: wrap;
+        }
+        .filter-bar__filters select {
+            flex: 1 1 auto;
+            min-width: 120px;
+        }
+
+        .services-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .service-card {
+            padding: 1.2rem;
+        }
+        .service-card__top {
+            padding-right: 0;
+            flex-wrap: wrap;
+        }
+        .service-card__status {
+            position: relative;
+            top: auto;
+            right: auto;
+            align-self: flex-start;
+            margin-top: 0.3rem;
+        }
+
+        .service-card__actions .btn-action {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.7rem;
+        }
+
+        .ai-recommendations {
+            padding: 1rem 1.25rem;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .ai-recommendations__content {
+            flex-wrap: nowrap;
+        }
+        .ai-recommendations__text h3 {
+            font-size: 0.9rem;
+        }
+
+        .fab {
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            font-size: 1.2rem;
+        }
+        .dark-toggle {
+            bottom: 5rem;
+            right: 1.5rem;
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .page-header__actions .btn-emergency span {
+            display: none;
+        }
+        .service-card__body {
+            font-size: 0.82rem;
+        }
+    }
+
+    /* ---------- Toast ---------- */
+    .toast-custom {
+        position: fixed;
+        bottom: 6rem;
+        right: 2rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.4s ease;
+        z-index: 200;
+        max-width: 360px;
+        font-size: 0.9rem;
+        color: var(--text-primary, #1a1a2e);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .toast-custom.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .toast-custom i {
+        font-size: 1.4rem;
+        color: var(--orange-500);
+    }
+
+    /* ---------- Loading shimmer ---------- */
+    .shimmer {
+        background: linear-gradient(90deg, var(--glass-bg) 25%, rgba(255, 255, 255, 0.4) 50%, var(--glass-bg) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    /* ---------- Empty state ---------- */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border-radius: var(--card-radius);
+        border: 1px solid var(--glass-border);
+    }
+
+    .empty-state i {
+        font-size: 3.5rem;
+        color: var(--orange-300);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.3rem;
+        color: var(--text-primary, #1a1a2e);
+    }
+
+    .empty-state p {
+        color: var(--text-secondary, #6b7280);
+        max-width: 400px;
+        margin: 0.5rem auto 1.5rem;
+    }
+
+    /* ---------- Notification panel ---------- */
+    .notification-panel {
+        position: fixed;
+        top: 0;
+        right: -420px;
+        width: 400px;
+        max-width: 90vw;
+        height: 100%;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border-left: 1px solid var(--glass-border);
+        box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
+        z-index: 300;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 1.5rem;
+        overflow-y: auto;
+    }
+
+    .notification-panel.open {
+        right: 0;
+    }
+
+    .notification-panel__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .notification-panel__header h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary, #1a1a2e);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .notification-panel__close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-secondary, #6b7280);
+        transition: var(--transition);
+    }
+
+    .notification-panel__close:hover {
+        color: var(--orange-500);
+        transform: rotate(90deg);
+    }
+
+    .notif-item {
+        display: flex;
+        gap: 0.8rem;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .notif-item__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(249, 115, 22, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--orange-500);
+        flex-shrink: 0;
+    }
+
+    .notif-item__text {
+        flex: 1;
+    }
+    .notif-item__text .n-title {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text-primary, #1a1a2e);
+    }
+    .notif-item__text .n-meta {
+        font-size: 0.75rem;
+        color: var(--text-secondary, #6b7280);
+    }
+
+    /* overlay for notification */
+    .notif-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        z-index: 299;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+
+    .notif-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+    }
+</style>
+
+<!-- ====== PAGE CONTENT ====== -->
+<div class="my-services-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>
+            <i class="fas fa-concierge-bell"></i>
+            My Services
+        </h1>
+        <div class="page-header__actions">
+            <button class="btn-emergency" id="emergencyBtn">
+                <i class="fas fa-phone-alt"></i>
+                <span>Emergency Booking</span>
+            </button>
+            <button class="btn-notification" id="notifToggle">
+                <i class="fas fa-bell"></i>
+                <span class="badge-dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card stat-card--orange">
+            <div class="stat-card__icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-card__number">18</div>
+            <div class="stat-card__label">Total Booked</div>
+        </div>
+        <div class="stat-card stat-card--green">
+            <div class="stat-card__icon"><i class="fas fa-play-circle"></i></div>
+            <div class="stat-card__number">4</div>
+            <div class="stat-card__label">Active Services</div>
+        </div>
+        <div class="stat-card stat-card--blue">
+            <div class="stat-card__icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-card__number">2</div>
+            <div class="stat-card__label">Upcoming</div>
+        </div>
+        <div class="stat-card stat-card--gray">
+            <div class="stat-card__icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-card__number">9</div>
+            <div class="stat-card__label">Completed</div>
+        </div>
+        <div class="stat-card stat-card--red">
+            <div class="stat-card__icon"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-card__number">3</div>
+            <div class="stat-card__label">Cancelled</div>
+        </div>
+        <div class="stat-card stat-card--gold">
+            <div class="stat-card__icon"><i class="fas fa-star"></i></div>
+            <div class="stat-card__number">7</div>
+            <div class="stat-card__label">Favourite Workers</div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-bar__search">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search by service, worker, or ID..." id="serviceSearch" />
+        </div>
+        <div class="filter-bar__filters">
+            <select id="filterCategory">
+                <option value="">All Categories</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="carpentry">Carpentry</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="painting">Painting</option>
+                <option value="hvac">HVAC</option>
+            </select>
+            <select id="filterStatus">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="ontheway">On the Way</option>
+                <option value="progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+            <select id="filterPayment">
+                <option value="">All Payment</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="partial">Partial</option>
+            </select>
+            <select id="filterDate">
+                <option value="">Date</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+            </select>
+            <button class="filter-bar__clear" id="clearFilters">
+                <i class="fas fa-undo-alt"></i> Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="ai-recommendations">
+        <div class="ai-recommendations__content">
+            <div class="ai-recommendations__icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-recommendations__text">
+                <h3>🧠 AI Recommendations</h3>
+                <p>Based on your history, we think you'd like these services</p>
+            </div>
+        </div>
+        <div class="ai-recommendations__tags">
+            <span class="tag">🔧 AC Repair</span>
+            <span class="tag">🛠️ Smart Home Setup</span>
+            <span class="tag">🧹 Deep Cleaning</span>
+            <span class="tag">⚡ Electrical Audit</span>
+        </div>
+    </div>
+
+    <!-- Services Grid -->
+    <div class="section-header">
+        <h2><i class="fas fa-list-ul"></i> Your Bookings</h2>
+        <span style="font-size:0.85rem;color:var(--text-secondary, #6b7280);">Showing 6 of 18</span>
+    </div>
+
+    <div class="services-grid" id="servicesGrid">
+
+        <!-- Card 1: Pending -->
+        <div class="service-card" data-status="pending" data-category="plumbing" data-payment="partial">
+            <span class="service-card__status status-pending">⏳ Pending</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=11" alt="Worker" />
+                    <span class="verified-badge"><i class="fas fa-check"></i></span>
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        John Mitchell
+                        <i class="fas fa-check-circle" style="color:#2563eb;font-size:0.7rem;"></i>
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.9 (124 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">🔧 Emergency Plumbing Repair</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0421</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 42 Oak Street, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Scheduled:</span> <span class="value">Apr 12, 2026 · 2:30 PM</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-clock"></i>
+                    <span><span class="label">ETA:</span> <span class="value orange">~ 25 min</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span><span class="label">Live Tracking:</span> <span class="value green"><i class="fas fa-circle" style="font-size:0.5rem;vertical-align:middle;"></i> Worker en route</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-partial"><i class="fas fa-clock"></i> Partial</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹500 / ₹1,200)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹1,200</span></span>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="service-card__timeline">
+                <div class="tl-item active"><span>📌 Pending confirmation</span></div>
+                <div class="tl-item"><span>👨‍🔧 Worker assigned</span></div>
+                <div class="tl-item"><span>🚗 On the way</span></div>
+                <div class="tl-item"><span>✅ Completed</span></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action outline"><i class="fas fa-calendar-plus"></i> Reschedule</button>
+                <button class="btn-action red"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-action"><i class="fas fa-comment-dots"></i> Chat</button>
+                <button class="btn-action"><i class="fas fa-phone"></i> Call</button>
+                <button class="btn-action"><i class="fas fa-file-invoice"></i> Invoice</button>
+                <button class="btn-action"><i class="fas fa-download"></i> Receipt</button>
+                <button class="btn-action green"><i class="fas fa-credit-card"></i> Pay Now</button>
+                <button class="btn-action"><i class="fas fa-location-dot"></i> Track</button>
+                <button class="btn-action"><i class="fas fa-heart" style="color:#ef4444;"></i> Fav</button>
+                <button class="btn-action"><i class="fas fa-flag"></i> Report</button>
+                <button class="btn-action"><i class="fas fa-rotate-right"></i> Rebook</button>
+            </div>
+        </div>
+
+        <!-- Card 2: Accepted -->
+        <div class="service-card" data-status="accepted" data-category="electrical" data-payment="paid">
+            <span class="service-card__status status-accepted">✅ Accepted</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=33" alt="Worker" />
+                    <span class="verified-badge"><i class="fas fa-check"></i></span>
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        Sarah Chen
+                        <i class="fas fa-check-circle" style="color:#2563eb;font-size:0.7rem;"></i>
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.8 (98 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">⚡ Full Home Electrical Audit</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0418</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 15 Maple Ave, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Scheduled:</span> <span class="value">Apr 15, 2026 · 10:00 AM</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-clock"></i>
+                    <span><span class="label">ETA:</span> <span class="value green">On time</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span><span class="label">Live Tracking:</span> <span class="value green"><i class="fas fa-circle" style="font-size:0.5rem;vertical-align:middle;"></i> Worker confirmed</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-paid"><i class="fas fa-check"></i> Paid</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹2,400)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹2,400</span></span>
+                </div>
+            </div>
+
+            <div class="service-card__timeline">
+                <div class="tl-item done"><span>✅ Pending confirmation</span></div>
+                <div class="tl-item active"><span>👨‍🔧 Worker assigned</span></div>
+                <div class="tl-item"><span>🚗 On the way</span></div>
+                <div class="tl-item"><span>✅ Completed</span></div>
+            </div>
+
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action outline"><i class="fas fa-calendar-plus"></i> Reschedule</button>
+                <button class="btn-action red"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn-action"><i class="fas fa-comment-dots"></i> Chat</button>
+                <button class="btn-action"><i class="fas fa-phone"></i> Call</button>
+                <button class="btn-action"><i class="fas fa-file-invoice"></i> Invoice</button>
+                <button class="btn-action"><i class="fas fa-download"></i> Receipt</button>
+                <button class="btn-action"><i class="fas fa-location-dot"></i> Track</button>
+                <button class="btn-action"><i class="fas fa-heart" style="color:#ef4444;"></i> Fav</button>
+                <button class="btn-action"><i class="fas fa-star" style="color:#f59e0b;"></i> Rate</button>
+            </div>
+        </div>
+
+        <!-- Card 3: On the Way -->
+        <div class="service-card" data-status="ontheway" data-category="cleaning" data-payment="paid">
+            <span class="service-card__status status-ontheway">🚗 On the Way</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=44" alt="Worker" />
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        Maria Rodriguez
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.7 (76 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">🧹 Premium Deep Cleaning (3BR)</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0416</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 88 Elm Street, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Scheduled:</span> <span class="value">Apr 10, 2026 · 9:00 AM</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-clock"></i>
+                    <span><span class="label">ETA:</span> <span class="value orange">~ 10 min</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span><span class="label">Live Tracking:</span> <span class="value green"><i class="fas fa-circle" style="font-size:0.5rem;vertical-align:middle;color:#16a34a;"></i> Near your location</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-paid"><i class="fas fa-check"></i> Paid</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹3,200)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹3,200</span></span>
+                </div>
+            </div>
+
+            <div class="service-card__timeline">
+                <div class="tl-item done"><span>✅ Pending confirmation</span></div>
+                <div class="tl-item done"><span>✅ Worker assigned</span></div>
+                <div class="tl-item active"><span>🚗 On the way</span></div>
+                <div class="tl-item"><span>✅ Completed</span></div>
+            </div>
+
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action"><i class="fas fa-comment-dots"></i> Chat</button>
+                <button class="btn-action"><i class="fas fa-phone"></i> Call</button>
+                <button class="btn-action"><i class="fas fa-location-dot"></i> Track</button>
+                <button class="btn-action"><i class="fas fa-file-invoice"></i> Invoice</button>
+            </div>
+        </div>
+
+        <!-- Card 4: In Progress -->
+        <div class="service-card" data-status="progress" data-category="hvac" data-payment="partial">
+            <span class="service-card__status status-progress">⚙️ In Progress</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=55" alt="Worker" />
+                    <span class="verified-badge"><i class="fas fa-check"></i></span>
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        David Kim
+                        <i class="fas fa-check-circle" style="color:#2563eb;font-size:0.7rem;"></i>
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.9 (203 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">❄️ AC Installation & Duct Cleaning</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0412</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 120 Pine Road, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Scheduled:</span> <span class="value">Apr 8, 2026 · 1:00 PM</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-clock"></i>
+                    <span><span class="label">Est. Completion:</span> <span class="value orange">~ 45 min</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span><span class="label">Live Tracking:</span> <span class="value green"><i class="fas fa-circle" style="font-size:0.5rem;vertical-align:middle;color:#16a34a;"></i> On-site</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-partial"><i class="fas fa-clock"></i> Partial</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹2,000 / ₹4,500)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹4,500</span></span>
+                </div>
+            </div>
+
+            <div class="service-card__timeline">
+                <div class="tl-item done"><span>✅ Pending confirmation</span></div>
+                <div class="tl-item done"><span>✅ Worker assigned</span></div>
+                <div class="tl-item done"><span>✅ On the way</span></div>
+                <div class="tl-item active"><span>⚙️ In progress</span></div>
+            </div>
+
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action"><i class="fas fa-comment-dots"></i> Chat</button>
+                <button class="btn-action"><i class="fas fa-phone"></i> Call</button>
+                <button class="btn-action"><i class="fas fa-location-dot"></i> Track</button>
+                <button class="btn-action green"><i class="fas fa-credit-card"></i> Pay Now</button>
+                <button class="btn-action"><i class="fas fa-file-invoice"></i> Invoice</button>
+            </div>
+        </div>
+
+        <!-- Card 5: Completed -->
+        <div class="service-card" data-status="completed" data-category="painting" data-payment="paid">
+            <span class="service-card__status status-completed">✅ Completed</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=66" alt="Worker" />
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        Lisa Park
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.6 (52 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">🎨 Interior Wall Painting (2 Rooms)</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0405</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 7 Birch Lane, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Completed:</span> <span class="value">Apr 5, 2026 · 4:30 PM</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-paid"><i class="fas fa-check"></i> Paid</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹1,800)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹1,800</span></span>
+                </div>
+            </div>
+
+            <div class="service-card__timeline">
+                <div class="tl-item done"><span>✅ Pending confirmation</span></div>
+                <div class="tl-item done"><span>✅ Worker assigned</span></div>
+                <div class="tl-item done"><span>✅ On the way</span></div>
+                <div class="tl-item done"><span>✅ Completed</span></div>
+            </div>
+
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action"><i class="fas fa-star" style="color:#f59e0b;"></i> Rate & Review</button>
+                <button class="btn-action"><i class="fas fa-rotate-right"></i> Rebook</button>
+                <button class="btn-action"><i class="fas fa-file-invoice"></i> Invoice</button>
+                <button class="btn-action"><i class="fas fa-download"></i> Receipt</button>
+                <button class="btn-action"><i class="fas fa-flag"></i> Report</button>
+                <button class="btn-action"><i class="fas fa-heart" style="color:#ef4444;"></i> Fav</button>
+            </div>
+        </div>
+
+        <!-- Card 6: Cancelled -->
+        <div class="service-card" data-status="cancelled" data-category="carpentry" data-payment="pending">
+            <span class="service-card__status status-cancelled">✕ Cancelled</span>
+            <div class="service-card__top">
+                <div class="service-card__avatar">
+                    <img src="https://i.pravatar.cc/100?img=77" alt="Worker" />
+                </div>
+                <div class="service-card__worker">
+                    <div class="service-card__worker-name">
+                        Mike Johnson
+                    </div>
+                    <div class="service-card__worker-rating">
+                        <i class="fas fa-star"></i> 4.4 (34 reviews)
+                    </div>
+                </div>
+            </div>
+            <div class="service-card__service-name">🪚 Custom Bookshelf Installation</div>
+            <div class="service-card__body">
+                <div class="detail-row">
+                    <i class="fas fa-hashtag"></i>
+                    <span><span class="label">Booking ID:</span> <span class="value">#FX-2026-0401</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-map-pin"></i>
+                    <span><span class="label">Address:</span> 33 Cedar Court, Springfield</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span><span class="label">Cancelled:</span> <span class="value red">Apr 1, 2026</span></span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-credit-card"></i>
+                    <span>
+                        <span class="label">Payment:</span>
+                        <span class="payment-status payment-pending"><i class="fas fa-clock"></i> Pending</span>
+                        <span style="font-size:0.75rem;color:var(--text-secondary);"> (₹0 / ₹1,500)</span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-rupee-sign"></i>
+                    <span><span class="label">Total:</span> <span class="value orange">₹1,500</span></span>
+                </div>
+            </div>
+
+            <div class="service-card__timeline">
+                <div class="tl-item done"><span>❌ Cancelled</span></div>
+            </div>
+
+            <div class="service-card__actions">
+                <button class="btn-action primary"><i class="fas fa-eye"></i> Details</button>
+                <button class="btn-action"><i class="fas fa-rotate-right"></i> Rebook</button>
+                <button class="btn-action"><i class="fas fa-flag"></i> Report</button>
+                <button class="btn-action"><i class="fas fa-undo-alt"></i> Request Refund</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Charts Row -->
+    <div class="section-header">
+        <h2><i class="fas fa-chart-pie"></i> Service Insights</h2>
+    </div>
+    <div class="charts-row">
+        <div class="chart-card">
+            <h3><i class="fas fa-chart-bar"></i> Service History (Last 6 Months)</h3>
+            <canvas id="historyChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3><i class="fas fa-wallet"></i> Spending by Category</h3>
+            <canvas id="spendingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent History -->
+    <div class="section-header">
+        <h2><i class="fas fa-history"></i> Recent Activity</h2>
+        <a href="#" class="section-header__link">View All <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="history-list">
+        <div class="history-item">
+            <div class="history-item__left">
+                <div class="history-item__icon"><i class="fas fa-check-circle" style="color:#16a34a;"></i></div>
+                <div class="history-item__info">
+                    <div class="h-title">AC Installation completed</div>
+                    <div class="h-meta">Apr 8, 2026 · 4:15 PM · David Kim</div>
+                </div>
+            </div>
+            <span class="history-item__status" style="color:#16a34a;background:rgba(34,197,94,0.1);">Completed</span>
+        </div>
+        <div class="history-item">
+            <div class="history-item__left">
+                <div class="history-item__icon"><i class="fas fa-clock" style="color:#d97706;"></i></div>
+                <div class="history-item__info">
+                    <div class="h-title">Plumbing repair rescheduled</div>
+                    <div class="h-meta">Apr 7, 2026 · 10:30 AM · John Mitchell</div>
+                </div>
+            </div>
+            <span class="history-item__status" style="color:#d97706;background:rgba(251,191,36,0.1);">Rescheduled</span>
+        </div>
+        <div class="history-item">
+            <div class="history-item__left">
+                <div class="history-item__icon"><i class="fas fa-star" style="color:#f59e0b;"></i></div>
+                <div class="history-item__info">
+                    <div class="h-title">You rated Sarah Chen 5 stars</div>
+                    <div class="h-meta">Apr 6, 2026 · 8:45 PM · Electrical Audit</div>
+                </div>
+            </div>
+            <span class="history-item__status" style="color:#f59e0b;background:rgba(245,158,11,0.1);">Rated</span>
+        </div>
+        <div class="history-item">
+            <div class="history-item__left">
+                <div class="history-item__icon"><i class="fas fa-credit-card" style="color:#2563eb;"></i></div>
+                <div class="history-item__info">
+                    <div class="h-title">Payment made for Deep Cleaning</div>
+                    <div class="h-meta">Apr 5, 2026 · 2:10 PM · ₹3,200</div>
+                </div>
+            </div>
+            <span class="history-item__status" style="color:#2563eb;background:rgba(59,130,246,0.1);">Paid</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- ====== FLOATING ACTION ====== -->
+<button class="fab" id="fabBtn" aria-label="Quick actions">
+    <i class="fas fa-plus"></i>
+</button>
+
+<button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode">
+    <i class="fas fa-moon"></i>
+</button>
+
+<!-- ====== TOAST ====== -->
+<div class="toast-custom" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg">Action completed successfully!</span>
+</div>
+
+<!-- ====== NOTIFICATION PANEL ====== -->
+<div class="notif-overlay" id="notifOverlay"></div>
+<div class="notification-panel" id="notifPanel">
+    <div class="notification-panel__header">
+        <h2><i class="fas fa-bell" style="color:var(--orange-500);"></i> Notifications</h2>
+        <button class="notification-panel__close" id="notifClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="notif-item">
+        <div class="notif-item__icon"><i class="fas fa-user-check"></i></div>
+        <div class="notif-item__text">
+            <div class="n-title">John Mitchell accepted your booking</div>
+            <div class="n-meta">2 min ago · Plumbing Repair</div>
+        </div>
+    </div>
+    <div class="notif-item">
+        <div class="notif-item__icon"><i class="fas fa-location-dot" style="color:#2563eb;"></i></div>
+        <div class="notif-item__text">
+            <div class="n-title">Maria is on her way! ETA 10 min</div>
+            <div class="n-meta">15 min ago · Deep Cleaning</div>
+        </div>
+    </div>
+    <div class="notif-item">
+        <div class="notif-item__icon"><i class="fas fa-star" style="color:#f59e0b;"></i></div>
+        <div class="notif-item__text">
+            <div class="n-title">Don't forget to rate David Kim</div>
+            <div class="n-meta">1 hour ago · AC Installation</div>
+        </div>
+    </div>
+    <div class="notif-item">
+        <div class="notif-item__icon"><i class="fas fa-credit-card" style="color:#16a34a;"></i></div>
+        <div class="notif-item__text">
+            <div class="n-title">Your payment of ₹1,200 was successful</div>
+            <div class="n-meta">3 hours ago · Plumbing Repair</div>
+        </div>
+    </div>
+    <div class="notif-item">
+        <div class="notif-item__icon"><i class="fas fa-calendar-check" style="color:#d97706;"></i></div>
+        <div class="notif-item__text">
+            <div class="n-title">Reminder: Electrical Audit tomorrow at 10 AM</div>
+            <div class="n-meta">5 hours ago · Sarah Chen</div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== SCRIPTS ====== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // ---------- Dark Mode ----------
+        const darkToggle = document.getElementById('darkToggle');
+        const icon = darkToggle.querySelector('i');
+
+        darkToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('fixgo-dark', 'true');
+            } else {
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('fixgo-dark', 'false');
+            }
+        });
+
+        if (localStorage.getItem('fixgo-dark') === 'true') {
+            document.body.classList.add('dark-mode');
+            icon.className = 'fas fa-sun';
+        }
+
+        // ---------- Notification Panel ----------
+        const notifToggle = document.getElementById('notifToggle');
+        const notifPanel = document.getElementById('notifPanel');
+        const notifClose = document.getElementById('notifClose');
+        const notifOverlay = document.getElementById('notifOverlay');
+
+        function openNotif() {
+            notifPanel.classList.add('open');
+            notifOverlay.classList.add('show');
+        }
+
+        function closeNotif() {
+            notifPanel.classList.remove('open');
+            notifOverlay.classList.remove('show');
+        }
+
+        notifToggle.addEventListener('click', openNotif);
+        notifClose.addEventListener('click', closeNotif);
+        notifOverlay.addEventListener('click', closeNotif);
+
+        // ---------- Toast ----------
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const icon = toast.querySelector('i');
+            toastMsg.textContent = msg;
+            if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#16a34a';
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = '#dc2626';
+            } else {
+                icon.className = 'fas fa-info-circle';
+                icon.style.color = '#2563eb';
+            }
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // ---------- Search & Filters ----------
+        const searchInput = document.getElementById('serviceSearch');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterPayment = document.getElementById('filterPayment');
+        const filterDate = document.getElementById('filterDate');
+        const clearBtn = document.getElementById('clearFilters');
+        const cards = document.querySelectorAll('.service-card');
+
+        function filterServices() {
+            const query = searchInput.value.toLowerCase().trim();
+            const cat = filterCategory.value;
+            const status = filterStatus.value;
+            const payment = filterPayment.value;
+            const date = filterDate.value;
+
+            let visible = 0;
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const cardCat = card.dataset.category || '';
+                const cardStatus = card.dataset.status || '';
+                const cardPayment = card.dataset.payment || '';
+
+                let match = true;
+                if (query && !text.includes(query)) match = false;
+                if (cat && cardCat !== cat) match = false;
+                if (status && cardStatus !== status) match = false;
+                if (payment && cardPayment !== payment) match = false;
+
+                // Simple date filter (mock)
+                if (date && match) {
+                    // Just a mock: if date is 'today', show only cards with today's date (none for demo)
+                    if (date === 'today') match = false;
+                    // For demo, week shows some, month shows all except cancelled
+                    if (date === 'week') {
+                        const isCancelled = cardStatus === 'cancelled';
+                        if (isCancelled) match = false;
+                    }
+                    if (date === 'month') {
+                        // show all except maybe some
+                    }
+                }
+
+                card.style.display = match ? 'block' : 'none';
+                if (match) visible++;
+            });
+
+            // Update count
+            const countEl = document.querySelector('.section-header span');
+            if (countEl) {
+                countEl.textContent = `Showing ${visible} of ${cards.length}`;
+            }
+
+            if (visible === 0) {
+                // Show empty state if no results
+                const grid = document.getElementById('servicesGrid');
+                let empty = grid.querySelector('.empty-state');
+                if (!empty) {
+                    empty = document.createElement('div');
+                    empty.className = 'empty-state';
+                    empty.style.gridColumn = '1 / -1';
+                    empty.innerHTML = `
+                                <i class="fas fa-search"></i>
+                                <h3>No services found</h3>
+                                <p>Try adjusting your filters or search terms.</p>
+                                <button class="btn-action primary" onclick="document.getElementById('clearFilters').click()">
+                                    <i class="fas fa-undo-alt"></i> Clear Filters
+                                </button>
+                            `;
+                    grid.appendChild(empty);
+                }
+                empty.style.display = 'block';
+            } else {
+                const empty = grid.querySelector('.empty-state');
+                if (empty) empty.style.display = 'none';
+            }
+        }
+
+        [searchInput, filterCategory, filterStatus, filterPayment, filterDate].forEach(el => {
+            el.addEventListener('input', filterServices);
+            el.addEventListener('change', filterServices);
+        });
+
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            filterCategory.value = '';
+            filterStatus.value = '';
+            filterPayment.value = '';
+            filterDate.value = '';
+            filterServices();
+            showToast('Filters cleared', 'info');
+        });
+
+        // ---------- Chart.js ----------
+        const ctx1 = document.getElementById('historyChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'],
+                datasets: [{
+                    label: 'Services Booked',
+                    data: [2, 4, 3, 5, 2, 6],
+                    backgroundColor: ['rgba(249,115,22,0.6)', 'rgba(249,115,22,0.5)',
+                        'rgba(249,115,22,0.4)', 'rgba(249,115,22,0.5)', 'rgba(249,115,22,0.3)',
+                        'rgba(249,115,22,0.7)'
+                    ],
+                    borderColor: '#f97316',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('spendingChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Plumbing', 'Electrical', 'Cleaning', 'Carpentry', 'HVAC', 'Painting'],
+                datasets: [{
+                    data: [3200, 4800, 6400, 1500, 4500, 1800],
+                    backgroundColor: ['#fb923c', '#f97316', '#ea580c', '#fdba74', '#c2410c',
+                        '#fed7aa'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 12,
+                            font: { size: 11 }
+                        }
+                    }
+                },
+                cutout: '65%',
+            }
+        });
+
+        // ---------- FAB ----------
+        const fab = document.getElementById('fabBtn');
+        fab.addEventListener('click', function() {
+            showToast('📋 Quick booking form opened!', 'info');
+        });
+
+        // ---------- Emergency ----------
+        document.getElementById('emergencyBtn').addEventListener('click', function() {
+            showToast('🚨 Emergency booking request sent! We\'ll call you ASAP.', 'error');
+        });
+
+        // ---------- Action buttons (demo) ----------
+        document.querySelectorAll('.service-card__actions .btn-action').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const text = this.textContent.trim();
+                const icon = this.querySelector('i')?.className || '';
+                let msg = `Action: ${text || icon}`;
+                if (text.includes('Details')) msg = '📄 Opening booking details...';
+                else if (text.includes('Reschedule')) msg = '📅 Reschedule booking...';
+                else if (text.includes('Cancel')) msg = '❌ Booking cancellation requested.';
+                else if (text.includes('Chat')) msg = '💬 Opening chat with worker...';
+                else if (text.includes('Call')) msg = '📞 Calling worker...';
+                else if (text.includes('Invoice')) msg = '📄 Loading invoice...';
+                else if (text.includes('Receipt')) msg = '⬇️ Downloading receipt...';
+                else if (text.includes('Pay Now')) msg = '💳 Redirecting to payment...';
+                else if (text.includes('Track')) msg = '📍 Opening live tracking...';
+                else if (text.includes('Fav')) msg = '⭐ Added to favourites!';
+                else if (text.includes('Rate')) msg = '⭐ Opening rating form...';
+                else if (text.includes('Report')) msg = '🚨 Report submitted. We\'ll review it.';
+                else if (text.includes('Rebook')) msg = '🔄 Rebooking the same service...';
+                else if (text.includes('Refund')) msg = '💰 Refund request submitted.';
+                showToast(msg, 'success');
+            });
+        });
+
+        // ---------- AI tags ----------
+        document.querySelectorAll('.ai-recommendations__tags .tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const service = this.textContent.trim();
+                showToast(`🔍 Searching for "${service}"...`, 'info');
+                searchInput.value = service;
+                filterServices();
+            });
+        });
+
+        // ---------- Keyboard shortcuts ----------
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNotif();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // ---------- Initial filter ----------
+        filterServices();
+
+        console.log('🚀 FixGo My Services page loaded successfully!');
+    });
+</script>
+{% endblock %}
