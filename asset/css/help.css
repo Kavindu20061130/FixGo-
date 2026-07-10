@@ -1,0 +1,1020 @@
+/* ================================================================
+   HELP PAGE – CUSTOM STYLES
+   ================================================================ */
+.help-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.help-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.help-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.help-header h1 i { color: #f97316; }
+.help-header p { color: #6b7280; margin-top: 0.2rem; }
+
+/* ----- Quick action buttons ----- */
+.help-actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+.action-btn {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: #f3f4f6;
+  border-color: #f97316;
+}
+.action-btn .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- TABS ---------- */
+.help-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.2rem;
+}
+.help-tab {
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px 50px 0 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  border-bottom: 3px solid transparent;
+}
+.help-tab:hover { color: #f97316; background: rgba(249,115,22,0.05); }
+.help-tab.active {
+  color: #f97316;
+  border-bottom-color: #f97316;
+  background: rgba(249,115,22,0.08);
+}
+.help-tab i { margin-right: 0.4rem; }
+
+/* ---------- TAB CONTENT ---------- */
+.tab-content {
+  display: none;
+  animation: fadeSlide 0.3s ease;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- GLASS CARDS ---------- */
+.glass-card {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  padding: 1.8rem;
+  margin-bottom: 1.8rem;
+  transition: all 0.3s;
+}
+
+/* ---------- SMART SEARCH ---------- */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 60px;
+  padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border: 2px solid #e5e7eb;
+  transition: border 0.2s;
+  max-width: 500px;
+}
+.search-box:focus-within {
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249,115,22,0.12);
+}
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 0.6rem 0;
+  font-size: 0.95rem;
+  background: transparent;
+}
+.search-box button {
+  background: #f97316;
+  border: none;
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-box button:hover { background: #ea580c; }
+
+/* ---------- FAQ ACCORDION ---------- */
+.faq-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.8rem 0;
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+  transition: color 0.2s;
+}
+.faq-question:hover { color: #f97316; }
+.faq-question i { transition: transform 0.3s; }
+.faq-question.open i { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s;
+  padding: 0 0 0 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.faq-answer.open {
+  max-height: 300px;
+  padding: 0.5rem 0 0.2rem 0;
+}
+
+/* ---------- COMMUNITY POST ---------- */
+.post-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid #f3f4f6;
+}
+.post-card .post-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.post-card .post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f97316;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.post-card .post-meta { flex: 1; }
+.post-card .post-meta strong { display: block; font-size: 0.95rem; }
+.post-card .post-meta span { font-size: 0.8rem; color: #6b7280; }
+.post-card .post-content { margin-top: 0.5rem; }
+.post-card .post-actions {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.8rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.post-card .post-actions i { cursor: pointer; transition: color 0.2s; }
+.post-card .post-actions i:hover { color: #f97316; }
+
+/* ---------- LIVE CHAT MOCK ---------- */
+.chat-message {
+  display: flex;
+  margin-bottom: 0.8rem;
+}
+.chat-message.sent { justify-content: flex-end; }
+.chat-message .bubble {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  border-radius: 18px;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-size: 0.9rem;
+  position: relative;
+}
+.chat-message.sent .bubble {
+  background: #f97316;
+  color: #fff;
+}
+.chat-message .bubble .time {
+  font-size: 0.7rem;
+  color: #6b7280;
+  display: block;
+  margin-top: 0.2rem;
+}
+.chat-message.sent .bubble .time { color: rgba(255,255,255,0.7); }
+
+/* ---------- TICKET LIST ---------- */
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+.ticket-item:last-child { border-bottom: none; }
+.ticket-status {
+  padding: 0.2rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ticket-status.open { background: #fef3c7; color: #92400e; }
+.ticket-status.resolved { background: #d1fae5; color: #065f46; }
+.ticket-status.pending { background: #fee2e2; color: #991b1b; }
+.ticket-status.closed { background: #e5e7eb; color: #374151; }
+
+/* ---------- SAFETY BADGES ---------- */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f9fafb;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  color: #1f2937;
+  margin: 0.2rem 0.4rem 0.2rem 0;
+}
+.trust-badge i { color: #10b981; font-size: 1rem; }
+
+/* ---------- FORM ELEMENTS (used in complaint/contact) ---------- */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: border 0.2s;
+  background: #fff;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #f97316;
+}
+
+/* ---------- PAY BUTTON (reused) ---------- */
+.btn-pay {
+  background: #f97316;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.btn-pay:hover {
+  background: #ea580c;
+  transform: translateY(-2px);
+}
+
+/* ---------- FLOATING ACTION BUTTON ---------- */
+.fab-help {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(249,115,22,0.4);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 100;
+}
+.fab-help:hover {
+  transform: scale(1.1);
+  background: #ea580c;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .help-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .help-tabs { gap: 0.2rem; }
+  .help-tab { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+  .glass-card { padding: 1.2rem; }
+  .search-box { max-width: 100%; }
+  .help-actions { align-self: flex-end; }
+}
+
+
+
+
+/* ================================================================
+   HELP PAGE – CUSTOM STYLES (expanded with animations)
+   ================================================================ */
+.help-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.help-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+.help-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.help-header h1 i { color: #f97316; }
+.help-header p { color: #6b7280; margin-top: 0.2rem; }
+
+/* ----- Quick action buttons ----- */
+.help-actions {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+.action-btn {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.action-btn:hover {
+  background: #f3f4f6;
+  border-color: #f97316;
+  transform: scale(1.05);
+}
+.action-btn .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse-ring 2s infinite;
+}
+
+/* ---------- TABS ---------- */
+.help-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.2rem;
+}
+.help-tab {
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px 50px 0 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  border-bottom: 3px solid transparent;
+}
+.help-tab:hover {
+  color: #f97316;
+  background: rgba(249,115,22,0.05);
+  transform: translateY(-1px);
+}
+.help-tab.active {
+  color: #f97316;
+  border-bottom-color: #f97316;
+  background: rgba(249,115,22,0.08);
+}
+.help-tab i { margin-right: 0.4rem; }
+
+/* ---------- TAB CONTENT ---------- */
+.tab-content {
+  display: none;
+  animation: fadeSlide 0.3s ease;
+}
+.tab-content.active { display: block; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- GLASS CARDS ---------- */
+.glass-card {
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  padding: 1.8rem;
+  margin-bottom: 1.8rem;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+  border-color: rgba(249,115,22,0.2);
+}
+
+/* ---------- SMART SEARCH ---------- */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 60px;
+  padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border: 2px solid #e5e7eb;
+  transition: border 0.2s, box-shadow 0.3s;
+  max-width: 500px;
+  position: relative;
+  overflow: hidden;
+}
+.search-box::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(249,115,22,0.03), transparent);
+  animation: shimmer 4s infinite;
+  pointer-events: none;
+}
+.search-box:focus-within {
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249,115,22,0.12);
+}
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 0.6rem 0;
+  font-size: 0.95rem;
+  background: transparent;
+}
+.search-box button {
+  background: #f97316;
+  border: none;
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.search-box button:hover {
+  background: #ea580c;
+  transform: scale(1.02);
+}
+
+/* ---------- FAQ ACCORDION ---------- */
+.faq-item {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.8rem 0;
+  transition: background 0.2s;
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-item:hover { background: rgba(249,115,22,0.02); }
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+  transition: color 0.2s;
+}
+.faq-question:hover { color: #f97316; }
+.faq-question i { transition: transform 0.3s; }
+.faq-question.open i { transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s;
+  padding: 0 0 0 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.faq-answer.open {
+  max-height: 300px;
+  padding: 0.5rem 0 0.2rem 0;
+}
+
+/* ---------- COMMUNITY POST ---------- */
+.post-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid #f3f4f6;
+  transition: all 0.25s ease;
+}
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-color: #f97316;
+}
+.post-card .post-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.post-card .post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f97316;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  transition: transform 0.3s;
+}
+.post-card:hover .post-avatar {
+  transform: scale(1.05) rotate(-2deg);
+}
+.post-card .post-meta { flex: 1; }
+.post-card .post-meta strong { display: block; font-size: 0.95rem; }
+.post-card .post-meta span { font-size: 0.8rem; color: #6b7280; }
+.post-card .post-content { margin-top: 0.5rem; }
+.post-card .post-actions {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 0.8rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.post-card .post-actions i {
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+.post-card .post-actions i:hover {
+  color: #f97316;
+  transform: scale(1.15);
+}
+
+/* ---------- LIVE CHAT MOCK ---------- */
+.chat-message {
+  display: flex;
+  margin-bottom: 0.8rem;
+  animation: fadeSlide 0.2s ease;
+}
+.chat-message.sent { justify-content: flex-end; }
+.chat-message .bubble {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  border-radius: 18px;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-size: 0.9rem;
+  position: relative;
+  transition: transform 0.1s;
+}
+.chat-message.sent .bubble {
+  background: #f97316;
+  color: #fff;
+}
+.chat-message .bubble .time {
+  font-size: 0.7rem;
+  color: #6b7280;
+  display: block;
+  margin-top: 0.2rem;
+}
+.chat-message.sent .bubble .time { color: rgba(255,255,255,0.7); }
+
+/* ---------- TICKET LIST ---------- */
+.ticket-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  transition: background 0.2s;
+}
+.ticket-item:last-child { border-bottom: none; }
+.ticket-item:hover { background: rgba(249,115,22,0.02); }
+.ticket-status {
+  padding: 0.2rem 0.8rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+.ticket-status:hover { transform: scale(1.05); }
+.ticket-status.open { background: #fef3c7; color: #92400e; }
+.ticket-status.resolved { background: #d1fae5; color: #065f46; }
+.ticket-status.pending { background: #fee2e2; color: #991b1b; }
+.ticket-status.closed { background: #e5e7eb; color: #374151; }
+
+/* ---------- SAFETY BADGES ---------- */
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f9fafb;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  color: #1f2937;
+  margin: 0.2rem 0.4rem 0.2rem 0;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.trust-badge:hover {
+  background: #fff;
+  border-color: #f97316;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249,115,22,0.12);
+}
+.trust-badge i { color: #10b981; font-size: 1rem; }
+
+/* ---------- FORM ELEMENTS (used in complaint/contact) ---------- */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: border 0.2s, box-shadow 0.2s, transform 0.2s;
+  background: #fff;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
+  transform: scale(1.005);
+}
+
+/* ---------- PAY BUTTON (reused) ---------- */
+.btn-pay {
+  background: #f97316;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(249,115,22,0.2);
+}
+.btn-pay:hover {
+  background: #ea580c;
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(249,115,22,0.3);
+}
+.btn-pay:active {
+  transform: scale(0.97);
+}
+
+/* ---------- FLOATING ACTION BUTTON ---------- */
+.fab-help {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(249,115,22,0.4);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 100;
+  animation: float 3s ease-in-out infinite;
+}
+.fab-help:hover {
+  transform: scale(1.12) rotate(-5deg);
+  background: #ea580c;
+  box-shadow: 0 8px 28px rgba(249,115,22,0.5);
+}
+
+/* ================================================================
+   ADDITIONAL ANIMATIONS & MICRO-INTERACTIONS (250+ lines)
+   ================================================================ */
+
+/* ---------- KEYFRAMES ---------- */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(-10deg); }
+  100% { transform: translateX(100%) rotate(-10deg); }
+}
+@keyframes glow {
+  0% { box-shadow: 0 0 4px rgba(249,115,22,0.2); }
+  50% { box-shadow: 0 0 20px rgba(249,115,22,0.4); }
+  100% { box-shadow: 0 0 4px rgba(249,115,22,0.2); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px); }
+  20% { transform: translateX(8px); }
+  30% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  50% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  70% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  90% { transform: translateX(0); }
+}
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  80% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes slide-up {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes slide-down {
+  0% { transform: translateY(-30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes scale-in {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-3deg); }
+  75% { transform: rotate(3deg); }
+}
+@keyframes wobble {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  15% { transform: translateX(-5px) rotate(-2deg); }
+  30% { transform: translateX(5px) rotate(2deg); }
+  45% { transform: translateX(-3px) rotate(-1deg); }
+  60% { transform: translateX(3px) rotate(1deg); }
+  75% { transform: translateX(-1px) rotate(0); }
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(249,115,22,0); }
+  100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
+}
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ---------- UTILITY ANIMATION CLASSES ---------- */
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-shake { animation: shake 0.5s ease-in-out; }
+.animate-glow { animation: glow 2s ease-in-out infinite; }
+.animate-bounce-in { animation: bounce-in 0.5s ease forwards; }
+.animate-fade-in { animation: fade-in 0.4s ease forwards; }
+.animate-slide-up { animation: slide-up 0.4s ease forwards; }
+.animate-slide-down { animation: slide-down 0.4s ease forwards; }
+.animate-scale-in { animation: scale-in 0.4s ease forwards; }
+.animate-spin-slow { animation: spin-slow 3s linear infinite; }
+.animate-wiggle { animation: wiggle 0.5s ease-in-out; }
+.animate-wobble { animation: wobble 0.6s ease-in-out; }
+.animate-pulse-ring { animation: pulse-ring 2s infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+/* ---------- HOVER MICRO-INTERACTIONS ---------- */
+.glass-card,
+.post-card,
+.ticket-item,
+.trust-badge,
+.faq-item,
+.help-tab {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.glass-card:active,
+.post-card:active,
+.btn-pay:active,
+.action-btn:active {
+  transform: scale(0.97);
+}
+
+/* Animated badge pulse */
+.badge-pulse {
+  animation: pulse-ring 1.5s infinite;
+}
+
+/* Shimmer loading placeholder (for future use) */
+.shimmer-placeholder {
+  background: #f0f0f0;
+  border-radius: 8px;
+  height: 20px;
+  margin: 4px 0;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+/* Hover lift on cards and interactive elements */
+.hover-lift {
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+}
+
+/* Glow on focus */
+.glow-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(249,115,22,0.15);
+  border-color: #f97316;
+}
+
+/* Slight rotate on hover for icons */
+.icon-rotate-hover:hover i {
+  display: inline-block;
+  transform: rotate(15deg);
+  transition: transform 0.3s;
+}
+
+/* Scale on hover for buttons */
+.scale-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Fade in on load for tabs (applied with JS) */
+.tab-content-active {
+  animation: fadeSlide 0.4s ease forwards;
+}
+
+/* Chat message appear animation */
+.chat-message {
+  animation: slide-up 0.2s ease forwards;
+}
+.chat-message:nth-child(2) { animation-delay: 0.1s; }
+.chat-message:nth-child(3) { animation-delay: 0.2s; }
+
+/* Post card appear with stagger */
+.post-card:nth-child(1) { animation: fadeSlide 0.3s ease forwards; }
+.post-card:nth-child(2) { animation: fadeSlide 0.3s ease 0.1s forwards; }
+.post-card:nth-child(3) { animation: fadeSlide 0.3s ease 0.2s forwards; }
+.post-card:nth-child(4) { animation: fadeSlide 0.3s ease 0.3s forwards; }
+
+/* Ticket items stagger */
+.ticket-item:nth-child(1) { animation: fadeSlide 0.2s ease forwards; }
+.ticket-item:nth-child(2) { animation: fadeSlide 0.2s ease 0.05s forwards; }
+.ticket-item:nth-child(3) { animation: fadeSlide 0.2s ease 0.1s forwards; }
+.ticket-item:nth-child(4) { animation: fadeSlide 0.2s ease 0.15s forwards; }
+.ticket-item:nth-child(5) { animation: fadeSlide 0.2s ease 0.2s forwards; }
+.ticket-item:nth-child(6) { animation: fadeSlide 0.2s ease 0.25s forwards; }
+.ticket-item:nth-child(7) { animation: fadeSlide 0.2s ease 0.3s forwards; }
+.ticket-item:nth-child(8) { animation: fadeSlide 0.2s ease 0.35s forwards; }
+
+/* Trust badges stagger */
+.trust-badge:nth-child(1) { animation: scale-in 0.3s ease forwards; }
+.trust-badge:nth-child(2) { animation: scale-in 0.3s ease 0.05s forwards; }
+.trust-badge:nth-child(3) { animation: scale-in 0.3s ease 0.1s forwards; }
+.trust-badge:nth-child(4) { animation: scale-in 0.3s ease 0.15s forwards; }
+.trust-badge:nth-child(5) { animation: scale-in 0.3s ease 0.2s forwards; }
+.trust-badge:nth-child(6) { animation: scale-in 0.3s ease 0.25s forwards; }
+.trust-badge:nth-child(7) { animation: scale-in 0.3s ease 0.3s forwards; }
+.trust-badge:nth-child(8) { animation: scale-in 0.3s ease 0.35s forwards; }
+.trust-badge:nth-child(9) { animation: scale-in 0.3s ease 0.4s forwards; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .help-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .help-tabs { gap: 0.2rem; }
+  .help-tab { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+  .glass-card { padding: 1.2rem; }
+  .search-box { max-width: 100%; }
+  .help-actions { align-self: flex-end; }
+  .post-card .post-actions { flex-wrap: wrap; gap: 0.5rem; }
+}

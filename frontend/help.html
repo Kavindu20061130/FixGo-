@@ -1,0 +1,531 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ===== EXTERNAL CSS & JS ===== -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/help.css') }}" />
+<script src="{{ url_for('static', filename='js/help.js') }}" defer></script>
+
+<!-- ===== FONT AWESOME (already in base, but safe) ===== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<!-- ================================================================
+     HELP PAGE – MAIN CONTENT
+     ================================================================ -->
+<div class="help-wrapper">
+
+  <!-- HEADER -->
+  <div class="help-header">
+    <div>
+      <h1><i class="fas fa-life-ring"></i> Help & Support</h1>
+      <p>Your central hub for assistance, community, and safety.</p>
+    </div>
+    <div class="search-box">
+      <input type="text" id="helpSearch" placeholder="Search help articles..." />
+      <button onclick="searchHelp()"><i class="fas fa-search"></i></button>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION BELL (quick action) -->
+  <div class="help-actions">
+    <button class="action-btn" id="notifBtn"><i class="fas fa-bell"></i><span class="badge">3</span></button>
+    <button class="action-btn" onclick="alert('Quick help menu')"><i class="fas fa-ellipsis-v"></i></button>
+  </div>
+
+  <!-- TABS -->
+  <div class="help-tabs" id="helpTabs">
+    <button class="help-tab active" data-tab="tab-faq"><i class="fas fa-question-circle"></i> Help Center</button>
+    <button class="help-tab" data-tab="tab-community"><i class="fas fa-users"></i> Community</button>
+    <button class="help-tab" data-tab="tab-chat"><i class="fas fa-comment-dots"></i> Live Chat</button>
+    <button class="help-tab" data-tab="tab-complaint"><i class="fas fa-exclamation-triangle"></i> Complaints</button>
+    <button class="help-tab" data-tab="tab-tickets"><i class="fas fa-ticket-alt"></i> Tickets</button>
+    <button class="help-tab" data-tab="tab-contact"><i class="fas fa-headset"></i> Contact</button>
+    <button class="help-tab" data-tab="tab-feedback"><i class="fas fa-star"></i> Feedback</button>
+    <button class="help-tab" data-tab="tab-safety"><i class="fas fa-shield-alt"></i> Safety</button>
+    <button class="help-tab" data-tab="tab-announcements"><i class="fas fa-bullhorn"></i> Updates</button>
+    <button class="help-tab" data-tab="tab-knowledge"><i class="fas fa-database"></i> Knowledge Base</button>
+    <button class="help-tab" data-tab="tab-resources"><i class="fas fa-download"></i> Resources</button>
+  </div>
+
+  <!-- ==============================================================
+       TAB 1: HELP CENTER (FAQs) – expanded to 25+
+       ============================================================== -->
+  <div id="tab-faq" class="tab-content active">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-book" style="color:#f97316;"></i> Frequently Asked Questions</h3>
+      <div id="faqContainer">
+        <!-- Account & Registration (5) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I create an account?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">You can sign up using your email or Google account. OTP verification ensures your phone number is valid.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Can I sign in with Google?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes, you can use Google Sign-In. This creates a secure account and links your Google profile.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What is OTP verification and why is it needed?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">OTP (One‑Time Password) is sent to your phone to confirm your identity and secure your account.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I update my profile?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Go to Account Settings (click your avatar) and edit your personal information, including profile picture.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What should I do if I forget my password?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Use the “Forgot Password” link on the login page to reset your password via email OTP.</div></div>
+        <!-- Booking & Services (6) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I book a service?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Go to the Services page, select the type of worker you need, choose a date/time, and confirm the booking.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How does the AI Assistant work?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Upload a photo of the problem, and our AI will identify the issue and suggest solutions or recommend a professional.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What is Emergency Mode?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Emergency Mode allows you to request urgent services with priority dispatch, available 24/7 for critical issues.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Can I track my worker in real‑time?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes, once a booking is accepted, you can see the worker’s location on a map in real time.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What services does FixGo offer?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">We cover electricians, plumbers, carpenters, painters, cleaners, mechanics, AC technicians, CCTV installers, gardeners, and more.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I cancel a booking?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">You can cancel from the booking details page before the service starts. Cancellation fees may apply.</div></div>
+        <!-- Payments & Finance (4) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What payment methods are accepted?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">We accept all major cards, PayPal, Apple Pay, Google Pay, Paytm, and UPI.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I get a refund?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Refunds are processed through the payment method used. Contact support with your booking ID.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What is the advance payment policy?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">A deposit may be required to secure the booking. The balance is paid after service completion.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Is my payment information secure?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes, we use SSL encryption and are PCI DSS compliant. We never store full card details.</div></div>
+        <!-- Worker & Verification (4) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How are workers verified?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">All workers undergo background checks, identity verification, and skill assessments before joining.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How can I become a worker on FixGo?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Apply through the Worker section. You’ll need to provide documents and pass a verification process.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Can I see worker ratings before booking?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes, each worker profile displays ratings and reviews from previous customers.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What if a worker doesn’t show up?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Report the no‑show via the Complaint section; we will investigate and offer a solution.</div></div>
+        <!-- Disputes & Safety (4) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What if I have a dispute with a worker?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Our dispute resolution team is available to mediate. File a complaint via the Complaints tab.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Is my personal information secure?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Yes, we use SSL encryption and comply with data protection regulations. See our Privacy Policy for details.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>What are FixGo’s community guidelines?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Our guidelines promote respectful, honest, and safe interactions. Read them in the Safety & Trust section.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I report inappropriate behaviour?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Use the “Report” button on a post or use the Complaint form with evidence.</div></div>
+        <!-- Technical & AI (3) -->
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>I’m having trouble with the app. Where can I get help?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Contact support via Live Chat, email, or phone. You can also create a support ticket.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How do I report a bug or technical issue?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">Use the Complaint form and select “Technical Bug” as the category. Include screenshots if possible.</div></div>
+        <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>How can I provide feedback about the AI Assistant?</span><i class="fas fa-chevron-down"></i></div><div class="faq-answer">You can submit feedback via the Feedback & Review section or directly from the AI Assistant interface.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 2: COMMUNITY HUB – expanded with more posts
+       ============================================================== -->
+  <div id="tab-community" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-users" style="color:#f97316;"></i> Community Feed</h3>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.2rem;">
+        <button class="help-tab" style="background:#f97316; color:#fff; border:none; border-radius:50px; padding:0.4rem 1rem;"><i class="fas fa-plus"></i> New Post</button>
+        <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.4rem 1rem;">Top</button>
+        <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.4rem 1rem;">Recent</button>
+        <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.4rem 1rem;">Unanswered</button>
+        <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.4rem 1rem;"><i class="fas fa-filter"></i> Filter</button>
+      </div>
+      <!-- Post 1 -->
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-avatar">JD</div>
+          <div class="post-meta"><strong>John Doe</strong><span>2 hours ago · <i class="fas fa-tag"></i> Plumbing</span></div>
+        </div>
+        <div class="post-content">Just fixed a leaky pipe using the AI Assistant's guide – saved me $100! 🛠️</div>
+        <div class="post-actions">
+          <span><i class="far fa-heart"></i> 12</span>
+          <span><i class="far fa-comment"></i> 5</span>
+          <span><i class="far fa-share-square"></i></span>
+          <span><i class="fas fa-flag"></i></span>
+        </div>
+        <div style="margin-top:0.8rem; background:#f9fafb; border-radius:12px; padding:0.6rem;">
+          <div style="font-weight:600; font-size:0.85rem;">Comments</div>
+          <div style="font-size:0.85rem; color:#4b5563; display:flex; gap:0.5rem; margin-top:0.3rem;"><strong>Sarah:</strong> Great job! Which pipe was it?</div>
+          <div style="font-size:0.85rem; color:#4b5563; display:flex; gap:0.5rem;"><strong>John:</strong> The kitchen sink pipe. The AI showed me exactly where to look.</div>
+        </div>
+      </div>
+      <!-- Post 2 -->
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-avatar">SM</div>
+          <div class="post-meta"><strong>Sarah M.</strong><span>5 hours ago · <i class="fas fa-tag"></i> Electrician</span></div>
+        </div>
+        <div class="post-content">Found a great electrician through FixGo – highly recommend! Fixed my wiring in no time.</div>
+        <div class="post-actions">
+          <span><i class="far fa-heart"></i> 8</span>
+          <span><i class="far fa-comment"></i> 2</span>
+          <span><i class="far fa-share-square"></i></span>
+          <span><i class="fas fa-flag"></i></span>
+        </div>
+      </div>
+      <!-- Post 3 -->
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-avatar">AK</div>
+          <div class="post-meta"><strong>Alex K.</strong><span>1 day ago · <i class="fas fa-tag"></i> General</span></div>
+        </div>
+        <div class="post-content">Does anyone have tips for cleaning painted walls without damaging the finish?</div>
+        <div class="post-actions">
+          <span><i class="far fa-heart"></i> 4</span>
+          <span><i class="far fa-comment"></i> 3</span>
+          <span><i class="far fa-share-square"></i></span>
+          <span><i class="fas fa-flag"></i></span>
+        </div>
+      </div>
+      <!-- Post 4 (new) -->
+      <div class="post-card">
+        <div class="post-header">
+          <div class="post-avatar">MB</div>
+          <div class="post-meta"><strong>Mike B.</strong><span>3 days ago · <i class="fas fa-tag"></i> HVAC</span></div>
+        </div>
+        <div class="post-content">AC stopped cooling – Emergency Mode saved me! Technician arrived in 45 minutes.</div>
+        <div class="post-actions">
+          <span><i class="far fa-heart"></i> 15</span>
+          <span><i class="far fa-comment"></i> 6</span>
+          <span><i class="far fa-share-square"></i></span>
+          <span><i class="fas fa-flag"></i></span>
+        </div>
+      </div>
+      <button style="background:transparent; border:none; color:#f97316; font-weight:600; cursor:pointer;">Load more posts →</button>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 3: LIVE CHAT – expanded with more features
+       ============================================================== -->
+  <div id="tab-chat" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-comment-dots" style="color:#f97316;"></i> Live Chat – Active Bookings</h3>
+      <div style="display:grid; grid-template-columns:1fr 2fr; gap:1rem;">
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; max-height:300px; overflow-y:auto;">
+          <div style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid #e5e7eb; cursor:pointer;">
+            <div style="width:32px; height:32px; border-radius:50%; background:#f97316; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">JW</div>
+            <div><strong>John Worker</strong><br><span style="font-size:0.75rem; color:#10b981;">● Online</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid #e5e7eb; cursor:pointer;">
+            <div style="width:32px; height:32px; border-radius:50%; background:#6b7280; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">ML</div>
+            <div><strong>Mary L.</strong><br><span style="font-size:0.75rem; color:#9ca3af;">● Last seen 1h ago</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; cursor:pointer;">
+            <div style="width:32px; height:32px; border-radius:50%; background:#f97316; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700;">RT</div>
+            <div><strong>Robert T.</strong><br><span style="font-size:0.75rem; color:#10b981;">● Online</span></div>
+          </div>
+        </div>
+        <div>
+          <div style="background:#f9fafb; border-radius:16px; padding:1rem; max-height:300px; overflow-y:auto;">
+            <div class="chat-message"><div class="bubble">Hi, I’m here for the plumbing repair. Are you available?<span class="time">10:15</span></div></div>
+            <div class="chat-message sent"><div class="bubble">Yes, I’ll be there in 30 minutes.<span class="time">10:18</span></div></div>
+            <div class="chat-message"><div class="bubble">Great, see you soon!<span class="time">10:20</span></div></div>
+            <div class="chat-message"><div class="bubble">I’m outside the main gate.<span class="time">10:45</span></div></div>
+            <div class="chat-message sent"><div class="bubble">On my way down.<span class="time">10:46</span></div></div>
+          </div>
+          <div style="display:flex; gap:0.5rem; margin-top:0.8rem;">
+            <input type="text" placeholder="Type a message..." style="flex:1; padding:0.6rem 1rem; border:2px solid #e5e7eb; border-radius:50px;" />
+            <button style="background:#f97316; border:none; color:#fff; padding:0 1.2rem; border-radius:50px; font-weight:600;"><i class="fas fa-paper-plane"></i></button>
+            <button style="background:#f3f4f6; border:none; padding:0 1rem; border-radius:50px;"><i class="fas fa-paperclip"></i></button>
+            <button style="background:#f3f4f6; border:none; padding:0 1rem; border-radius:50px;"><i class="fas fa-smile"></i></button>
+            <button style="background:#f3f4f6; border:none; padding:0 1rem; border-radius:50px;"><i class="fas fa-microphone"></i></button>
+          </div>
+          <div style="font-size:0.75rem; color:#6b7280; margin-top:0.3rem;"><i class="fas fa-check-double"></i> Read at 10:47</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 4: COMPLAINTS & DISPUTE – expanded categories
+       ============================================================== -->
+  <div id="tab-complaint" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-exclamation-triangle" style="color:#f97316;"></i> File a Complaint or Dispute</h3>
+      <form>
+        <div class="form-group">
+          <label>Complaint Category</label>
+          <select style="width:100%; padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;">
+            <option>Booking Issue</option>
+            <option>Payment Problem</option>
+            <option>Worker Misconduct</option>
+            <option>Customer Misconduct</option>
+            <option>Fraud / Fake Profile</option>
+            <option>Technical Bug</option>
+            <option>AI Assistant Error</option>
+            <option>Emergency Mode Problem</option>
+            <option>Poor Workmanship</option>
+            <option>Delay / No‑show</option>
+            <option>Inappropriate Behaviour</option>
+            <option>Safety Concern</option>
+            <option>Data Privacy</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Booking ID (optional)</label>
+          <input type="text" placeholder="#BK-..." style="width:100%; padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;" />
+        </div>
+        <div class="form-group">
+          <label>Worker Name (if applicable)</label>
+          <input type="text" placeholder="Worker’s name" style="width:100%; padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea rows="4" style="width:100%; padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;" placeholder="Describe the issue in detail..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Attach Evidence (photos/documents)</label>
+          <input type="file" style="width:100%; padding:0.4rem; border:2px solid #e5e7eb; border-radius:12px;" multiple />
+        </div>
+        <div class="form-group" style="display:flex; gap:0.8rem; align-items:center;">
+          <input type="checkbox" id="agree" />
+          <label for="agree" style="font-size:0.85rem;">I confirm that the information is accurate to the best of my knowledge.</label>
+        </div>
+        <button type="submit" class="btn-pay" style="width:auto; padding:0.6rem 2rem;">Submit Complaint</button>
+      </form>
+      <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid #e5e7eb;">
+        <h4>Your Complaints History</h4>
+        <div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid #e5e7eb; font-size:0.9rem;">
+          <span>#CMP-101 – Worker misconduct</span>
+          <span class="ticket-status resolved">Resolved</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; padding:0.4rem 0; font-size:0.9rem;">
+          <span>#CMP-102 – Payment dispute</span>
+          <span class="ticket-status pending">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 5: TICKETS – expanded with more tickets
+       ============================================================== -->
+  <div id="tab-tickets" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-ticket-alt" style="color:#f97316;"></i> Your Support Tickets</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+        <span>Showing 8 tickets</span>
+        <button class="btn-pay" style="width:auto; padding:0.4rem 1.2rem; font-size:0.9rem;"><i class="fas fa-plus"></i> New Ticket</button>
+      </div>
+      <div>
+        <div class="ticket-item"><div><strong>Payment issue</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1001 · 2 days ago</span></div><span class="ticket-status open">Open</span></div>
+        <div class="ticket-item"><div><strong>Worker verification</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1002 · 5 days ago</span></div><span class="ticket-status resolved">Resolved</span></div>
+        <div class="ticket-item"><div><strong>Refund request</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1003 · 1 week ago</span></div><span class="ticket-status pending">Pending</span></div>
+        <div class="ticket-item"><div><strong>AI Assistant error</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1004 · 2 weeks ago</span></div><span class="ticket-status resolved">Resolved</span></div>
+        <div class="ticket-item"><div><strong>Booking cancellation</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1005 · 3 weeks ago</span></div><span class="ticket-status resolved">Resolved</span></div>
+        <div class="ticket-item"><div><strong>Emergency Mode feedback</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1006 · 1 month ago</span></div><span class="ticket-status closed">Closed</span></div>
+        <div class="ticket-item"><div><strong>Worker rating dispute</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1007 · 1 month ago</span></div><span class="ticket-status resolved">Resolved</span></div>
+        <div class="ticket-item"><div><strong>Account deletion request</strong><br><span style="font-size:0.8rem; color:#6b7280;">#T-1008 · 2 months ago</span></div><span class="ticket-status resolved">Resolved</span></div>
+      </div>
+      <div style="margin-top:1rem; display:flex; gap:0.4rem; justify-content:center;">
+        <button style="background:#f3f4f6; border:none; padding:0.3rem 0.8rem; border-radius:50px;">1</button>
+        <button style="background:#f97316; color:#fff; border:none; padding:0.3rem 0.8rem; border-radius:50px;">2</button>
+        <button style="background:#f3f4f6; border:none; padding:0.3rem 0.8rem; border-radius:50px;">3</button>
+        <span style="color:#6b7280;">…</span>
+        <button style="background:#f3f4f6; border:none; padding:0.3rem 0.8rem; border-radius:50px;">10</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 6: CONTACT SUPPORT – expanded with more options
+       ============================================================== -->
+  <div id="tab-contact" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-headset" style="color:#f97316;"></i> Contact Our Support Team</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+        <div>
+          <h4><i class="fas fa-comment"></i> Live Chat</h4>
+          <p>Available 24/7</p>
+          <p style="color:#10b981;">● Online now</p>
+          <button class="btn-pay" style="width:auto; padding:0.4rem 1.2rem; font-size:0.9rem;">Start Chat</button>
+        </div>
+        <div>
+          <h4><i class="fas fa-envelope"></i> Email</h4>
+          <p><a href="mailto:support@fixgo.lk" style="color:#f97316;">support@fixgo.lk</a></p>
+          <p>Response within 24h</p>
+          <p><small>For urgent issues, use live chat or phone.</small></p>
+        </div>
+        <div>
+          <h4><i class="fas fa-phone"></i> Phone</h4>
+          <p><a href="tel:+94112345678" style="color:#f97316;">+94 11 234 5678</a></p>
+          <p>Mon–Fri 9AM–6PM (GMT+5:30)</p>
+        </div>
+        <div>
+          <h4><i class="fas fa-flag"></i> Emergency Support</h4>
+          <p>24/7 urgent assistance</p>
+          <button class="btn-pay" style="width:auto; padding:0.4rem 1.2rem; font-size:0.9rem; background:#ef4444;">Request Callback</button>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem; background:#f9fafb; border-radius:16px; padding:1rem;">
+        <h4><i class="fas fa-clock"></i> Operating Hours</h4>
+        <ul style="list-style:none; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:0.2rem;">
+          <li>Monday–Friday: 9:00 – 18:00</li>
+          <li>Saturday: 10:00 – 16:00</li>
+          <li>Sunday: Closed</li>
+          <li>Emergency: 24/7</li>
+        </ul>
+      </div>
+      <!-- Additional contact form -->
+      <div style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid #e5e7eb;">
+        <h4>Send us a message</h4>
+        <form style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <input type="text" placeholder="Your name" style="padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;" />
+          <input type="email" placeholder="Your email" style="padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;" />
+          <textarea rows="3" placeholder="Message..." style="grid-column:1/3; padding:0.6rem; border:2px solid #e5e7eb; border-radius:12px;"></textarea>
+          <button type="submit" class="btn-pay" style="grid-column:1/3; width:auto; padding:0.6rem 2rem;">Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 7: FEEDBACK & REVIEWS – expanded
+       ============================================================== -->
+  <div id="tab-feedback" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-star" style="color:#f97316;"></i> Feedback & Reviews</h3>
+      <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+        <div style="background:#f9fafb; padding:1rem; border-radius:16px; flex:1; min-width:200px;">
+          <div style="font-size:2rem; font-weight:700; color:#f97316;">4.8</div>
+          <div><i class="fas fa-star" style="color:#fbbf24;"></i><i class="fas fa-star" style="color:#fbbf24;"></i><i class="fas fa-star" style="color:#fbbf24;"></i><i class="fas fa-star" style="color:#fbbf24;"></i><i class="fas fa-star-half-alt" style="color:#fbbf24;"></i></div>
+          <span>Based on 2,340 reviews</span>
+        </div>
+        <div>
+          <button class="help-tab" style="background:#f97316; color:#fff; border:none; border-radius:50px; padding:0.6rem 1.2rem;">Leave a Review</button>
+          <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.6rem 1.2rem;">Satisfaction Survey</button>
+          <button class="help-tab" style="background:#f3f4f6; border:none; border-radius:50px; padding:0.6rem 1.2rem;">Suggest Feature</button>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <h4>Recent Reviews</h4>
+        <div style="background:#f9fafb; border-radius:12px; padding:0.8rem; margin-bottom:0.5rem;">
+          <div><strong>Plumbing</strong> – <span class="trust-badge" style="background:#d1fae5;"><i class="fas fa-star" style="color:#fbbf24;"></i> 5.0</span></div>
+          <p style="font-size:0.9rem; margin:0.2rem 0;">“Excellent service, very professional!”</p>
+          <span style="font-size:0.75rem; color:#6b7280;">– John D. 2 days ago</span>
+        </div>
+        <div style="background:#f9fafb; border-radius:12px; padding:0.8rem; margin-bottom:0.5rem;">
+          <div><strong>Electrical</strong> – <span class="trust-badge" style="background:#fef3c7;"><i class="fas fa-star" style="color:#fbbf24;"></i> 4.0</span></div>
+          <p style="font-size:0.9rem; margin:0.2rem 0;">“Good work but arrived a bit late.”</p>
+          <span style="font-size:0.75rem; color:#6b7280;">– Sarah M. 5 days ago</span>
+        </div>
+        <div style="background:#f9fafb; border-radius:12px; padding:0.8rem;">
+          <div><strong>Carpentry</strong> – <span class="trust-badge" style="background:#d1fae5;"><i class="fas fa-star" style="color:#fbbf24;"></i> 5.0</span></div>
+          <p style="font-size:0.9rem; margin:0.2rem 0;">“Beautiful custom shelves, very happy.”</p>
+          <span style="font-size:0.75rem; color:#6b7280;">– Alex K. 1 week ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 8: SAFETY & TRUST – expanded
+       ============================================================== -->
+  <div id="tab-safety" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-shield-alt" style="color:#f97316;"></i> Safety & Trust Center</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+        <span class="trust-badge"><i class="fas fa-check-circle"></i> Verified Workers</span>
+        <span class="trust-badge"><i class="fas fa-lock"></i> SSL Encrypted</span>
+        <span class="trust-badge"><i class="fas fa-credit-card"></i> PCI DSS Compliant</span>
+        <span class="trust-badge"><i class="fas fa-file-contract"></i> Terms & Conditions</span>
+        <span class="trust-badge"><i class="fas fa-user-secret"></i> Privacy Policy</span>
+        <span class="trust-badge"><i class="fas fa-gavel"></i> Dispute Resolution</span>
+        <span class="trust-badge"><i class="fas fa-shield-alt"></i> Fraud Prevention</span>
+        <span class="trust-badge"><i class="fas fa-id-card"></i> Identity Verification</span>
+        <span class="trust-badge"><i class="fas fa-handshake"></i> Service Guarantee</span>
+      </div>
+      <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+        <div><h4>🔒 Secure Payments</h4><p>All transactions are protected with bank‑grade encryption. We never store your full card details.</p></div>
+        <div><h4>🛡️ Worker Verification</h4><p>Every worker is background‑checked and verified. You can view their credentials before booking.</p></div>
+        <div><h4>📋 Service Guidelines</h4><p>Clear policies ensure both customers and workers know what to expect. Read our <a href="#" style="color:#f97316;">Service Guidelines</a>.</p></div>
+        <div><h4>💬 Community Guidelines</h4><p>We foster a respectful and safe community. <a href="#" style="color:#f97316;">Read more</a> about our community rules.</p></div>
+        <div><h4>🕵️ Fraud Prevention</h4><p>We use AI and manual checks to detect and prevent fraudulent activities.</p></div>
+        <div><h4>📄 Dispute Resolution</h4><p>If a dispute arises, we mediate fairly to ensure a satisfactory outcome for both parties.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 9: ANNOUNCEMENTS – expanded
+       ============================================================== -->
+  <div id="tab-announcements" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-bullhorn" style="color:#f97316;"></i> Platform Updates & Announcements</h3>
+      <div style="background:#fff7ed; border-left:4px solid #f97316; padding:1rem; border-radius:12px; margin-bottom:1rem;">
+        <strong>📢 New Feature: Emergency Mode</strong>
+        <p style="margin:0.2rem 0 0; color:#6b7280;">You can now request urgent services with priority dispatch.</p>
+        <span style="font-size:0.8rem; color:#6b7280;">1 hour ago</span>
+      </div>
+      <div style="background:#f3f4f6; padding:1rem; border-radius:12px; margin-bottom:0.5rem;">
+        <strong>🔧 Maintenance Notice</strong>
+        <p style="margin:0.2rem 0 0; color:#6b7280;">Scheduled downtime on July 15, 2AM–4AM.</p>
+        <span style="font-size:0.8rem; color:#6b7280;">2 days ago</span>
+      </div>
+      <div style="background:#f3f4f6; padding:1rem; border-radius:12px; margin-bottom:0.5rem;">
+        <strong>🎉 Promotional Offer</strong>
+        <p style="margin:0.2rem 0 0; color:#6b7280;">Get 20% off your first booking using code <strong>FIXGO20</strong>.</p>
+        <span style="font-size:0.8rem; color:#6b7280;">1 week ago</span>
+      </div>
+      <div style="background:#f3f4f6; padding:1rem; border-radius:12px; margin-bottom:0.5rem;">
+        <strong>📱 App Update</strong>
+        <p style="margin:0.2rem 0 0; color:#6b7280;">Version 2.1 now available with improved AI and real‑time tracking.</p>
+        <span style="font-size:0.8rem; color:#6b7280;">2 weeks ago</span>
+      </div>
+      <div style="background:#f3f4f6; padding:1rem; border-radius:12px;">
+        <strong>🏆 New Service: CCTV Installation</strong>
+        <p style="margin:0.2rem 0 0; color:#6b7280;">We now offer professional CCTV installation services.</p>
+        <span style="font-size:0.8rem; color:#6b7280;">3 weeks ago</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 10: KNOWLEDGE BASE – expanded
+       ============================================================== -->
+  <div id="tab-knowledge" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-database" style="color:#f97316;"></i> Knowledge Base</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-user-plus" style="font-size:2rem; color:#f97316;"></i><h4>Getting Started</h4><p style="font-size:0.9rem;">Learn how to create an account and set up your profile.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-tools" style="font-size:2rem; color:#f97316;"></i><h4>Booking Services</h4><p style="font-size:0.9rem;">Step‑by‑step guide to booking your first service.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-robot" style="font-size:2rem; color:#f97316;"></i><h4>AI Assistant</h4><p style="font-size:0.9rem;">How to use the AI to diagnose and solve issues.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-hand-holding-usd" style="font-size:2rem; color:#f97316;"></i><h4>Payments & Refunds</h4><p style="font-size:0.9rem;">Understand our payment and refund policies.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-bolt" style="font-size:2rem; color:#f97316;"></i><h4>Emergency Mode</h4><p style="font-size:0.9rem;">When and how to use Emergency Mode.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-user-cog" style="font-size:2rem; color:#f97316;"></i><h4>Worker Guide</h4><p style="font-size:0.9rem;">How to become a worker and manage your profile.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-shield-alt" style="font-size:2rem; color:#f97316;"></i><h4>Safety Tips</h4><p style="font-size:0.9rem;">Stay safe while using FixGo.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-comment-dots" style="font-size:2rem; color:#f97316;"></i><h4>Communication</h4><p style="font-size:0.9rem;">Best practices for chatting with workers.</p><a href="#" style="color:#f97316;">Read →</a></div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;"><i class="fas fa-star" style="font-size:2rem; color:#f97316;"></i><h4>Reviews & Ratings</h4><p style="font-size:0.9rem;">How to rate and review a service.</p><a href="#" style="color:#f97316;">Read →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================
+       TAB 11: RESOURCES – NEW
+       ============================================================== -->
+  <div id="tab-resources" class="tab-content">
+    <div class="glass-card">
+      <h3 style="margin-top:0;"><i class="fas fa-download" style="color:#f97316;"></i> Resources & Downloads</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-file-pdf" style="font-size:2rem; color:#f97316;"></i>
+          <h4>User Guide</h4>
+          <p style="font-size:0.9rem;">Complete PDF guide for FixGo users.</p>
+          <a href="#" style="color:#f97316;">Download</a>
+        </div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-video" style="font-size:2rem; color:#f97316;"></i>
+          <h4>Tutorial Videos</h4>
+          <p style="font-size:0.9rem;">Watch how‑to videos on YouTube.</p>
+          <a href="#" style="color:#f97316;">Watch</a>
+        </div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-file-contract" style="font-size:2rem; color:#f97316;"></i>
+          <h4>Terms & Policies</h4>
+          <p style="font-size:0.9rem;">Full legal documents in one place.</p>
+          <a href="#" style="color:#f97316;">View</a>
+        </div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-faq" style="font-size:2rem; color:#f97316;"></i>
+          <h4>Quick Start Guide</h4>
+          <p style="font-size:0.9rem;">Get started in 5 minutes.</p>
+          <a href="#" style="color:#f97316;">Read</a>
+        </div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-shield-alt" style="font-size:2rem; color:#f97316;"></i>
+          <h4>Safety Checklist</h4>
+          <p style="font-size:0.9rem;">Ensure a safe service experience.</p>
+          <a href="#" style="color:#f97316;">Download</a>
+        </div>
+        <div style="background:#f9fafb; border-radius:16px; padding:1rem; text-align:center;">
+          <i class="fas fa-chart-bar" style="font-size:2rem; color:#f97316;"></i>
+          <h4>Platform Report</h4>
+          <p style="font-size:0.9rem;">Latest metrics and transparency report.</p>
+          <a href="#" style="color:#f97316;">View</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== FLOATING ACTION BUTTON (new) ===== -->
+<button class="fab-help" id="fabHelp">
+  <i class="fas fa-question"></i>
+</button>
+
+{% endblock %}
